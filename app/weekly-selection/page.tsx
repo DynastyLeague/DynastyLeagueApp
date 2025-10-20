@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from '@/lib/auth';
 import LoginForm from '@/components/LoginForm';
 import { Player, Matchup, WeekDate, Game, LineupSlot, Team } from '@/lib/types';
@@ -35,7 +35,7 @@ export default function WeeklySelectionPage() {
   const [dataLoading, setDataLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [submittedSelections, setSubmittedSelections] = useState<any[]>([]);
+  const [submittedSelections, setSubmittedSelections] = useState<unknown[]>([]);
   const [viewTeamId, setViewTeamId] = useState<string | null>(null);
 
   // Determine current week based on Australia EST
@@ -129,7 +129,7 @@ export default function WeeklySelectionPage() {
       
       const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
       return `${dayName} ${game.homeAway} ${game.opponent}`;
-    } catch (error) {
+    } catch {
       return `Error: ${game.date}`;
     }
   };
@@ -138,9 +138,9 @@ export default function WeeklySelectionPage() {
     if (currentTeam) {
       loadData();
     }
-  }, [currentTeam]);
+  }, [currentTeam, loadData]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!currentTeam) return;
     
     setDataLoading(true);
@@ -190,7 +190,7 @@ export default function WeeklySelectionPage() {
     } finally {
       setDataLoading(false);
     }
-  };
+  }, [currentTeam, viewTeamId, currentWeek]);
 
   const loadDataForTeam = async (teamId: string) => {
     setDataLoading(true);

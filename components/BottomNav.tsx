@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 interface BottomNavProps {
-  currentTeam?: any;
+  currentTeam?: { teamId: string; teamName: string; mainLogo?: string } | null;
 }
 
 // Simple SVG Icons as components
@@ -39,7 +39,7 @@ const ChevronUpIcon = () => (
   </svg>
 );
 
-export default function BottomNav({ currentTeam }: BottomNavProps) {
+export default function BottomNav({ }: BottomNavProps) {
   const pathname = usePathname();
   const [showDropdown, setShowDropdown] = useState(false);
 

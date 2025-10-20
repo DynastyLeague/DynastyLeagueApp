@@ -10,12 +10,12 @@ export default function TeamPage() {
   const params = useParams<{ teamId: string }>();
   const teamId = params?.teamId || "";
 
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [, setTeams] = useState<Team[]>([]);
   const [team, setTeam] = useState<Team | null>(null);
   const [active, setActive] = useState<Player[]>([]);
   const [dev, setDev] = useState<Player[]>([]);
   const [inj, setInj] = useState<Player[]>([]);
-  const [draftPicks, setDraftPicks] = useState<any>(null);
+  const [draftPicks, setDraftPicks] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
