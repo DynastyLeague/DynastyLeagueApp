@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
     });
 
     const rows = response.data.values || [];
-    const headerRow = rows[0] || [];
     const dataRows = rows.slice(1);
 
     // Filter selections based on parameters

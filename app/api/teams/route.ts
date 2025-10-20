@@ -1,5 +1,5 @@
 import { getSheetsClient } from '@/lib/server/google';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // Ensure Node.js runtime (not Edge) for googleapis compatibility
 export const runtime = 'nodejs';
@@ -7,7 +7,6 @@ export const runtime = 'nodejs';
 // Google Sheets configuration
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID || '';
 const TEAMS_SHEET_NAME = 'Teams';
-const PLAYERS_SHEET_NAME = 'Players';
 
 // Initialize Google Sheets API
 // use centralized sheets client

@@ -26,11 +26,12 @@ export async function GET() {
     result.sheetsAccess = 'ok';
     result.sampleHeaders = resp.data.values?.[0] || [];
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string; reason?: string };
     result.error = {
-      message: String(error?.message || error),
-      code: error?.code,
-      reason: error?.reason,
+      message: String(err?.message || error),
+      code: err?.code,
+      reason: err?.reason,
     };
     return NextResponse.json(result, { status: 500 });
   }

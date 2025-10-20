@@ -16,7 +16,7 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
-    const weekDates = rows.slice(1).map((row, index) => ({
+    const weekDates = rows.slice(1).map((row) => ({
       week: parseInt(row[0]) || 0,
       startDate: row[1] || '',
       finishDate: row[2] || '',

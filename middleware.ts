@@ -3,13 +3,13 @@ import { verifySession } from '@/lib/server/auth';
 
 const PROTECTED_PREFIXES = ['/my-team'];
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const protectedRoute = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
   if (!protectedRoute) return NextResponse.next();
 
   const access = req.cookies.get('dl_access')?.value;
-  const payload = verifySession(access);
+  const payload = await verifySession(access);
   if (payload) return NextResponse.next();
 
   // No valid access; redirect to login page

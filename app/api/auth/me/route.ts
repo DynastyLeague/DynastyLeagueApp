@@ -4,13 +4,13 @@ import { readAccess, readRefresh, signSession, setAccessCookie } from '@/lib/ser
 export const runtime = 'nodejs';
 
 export async function GET() {
-  const access = readAccess();
+  const access = await readAccess();
   if (access) return NextResponse.json({ teamId: access.teamId, teamName: access.teamName, role: access.role });
 
-  const refresh = readRefresh();
+  const refresh = await readRefresh();
   if (refresh) {
     // auto-refresh access
-    const newAccess = signSession({ teamId: refresh.teamId, teamName: refresh.teamName, role: refresh.role }, 60 * 60);
+    const newAccess = await signSession({ teamId: refresh.teamId, teamName: refresh.teamName, role: refresh.role }, 60 * 60);
     setAccessCookie(newAccess, 60 * 60);
     return NextResponse.json({ teamId: refresh.teamId, teamName: refresh.teamName, role: refresh.role });
   }

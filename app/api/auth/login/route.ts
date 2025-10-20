@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    const role = isCommissioner(teamId) ? 'commissioner' as const : 'team' as const;
-    const access = signSession({ teamId, teamName, role }, 60 * 60); // 60 min
-    const refreshTtl = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 7; // 60d vs 7d
-    const refresh = signSession({ teamId, teamName, role }, refreshTtl);
+        const role = isCommissioner(teamId) ? 'commissioner' as const : 'team' as const;
+        const access = await signSession({ teamId, teamName, role }, 60 * 60); // 60 min
+        const refreshTtl = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 7; // 60d vs 7d
+        const refresh = await signSession({ teamId, teamName, role }, refreshTtl);
 
     setAccessCookie(access, 60 * 60);
     setRefreshCookie(refresh, refreshTtl);

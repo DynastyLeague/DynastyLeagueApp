@@ -20,7 +20,7 @@ export default function HomePage() {
           
           <div className="text-center">
             <h1 className="heading-1 mb-4">The Greatest League on Earth</h1>
-            <p className="body-text text-lg">Dynasties aren't given, there built!</p>
+            <p className="body-text text-lg">Dynasties aren&apos;t given, there built!</p>
           </div>
         </>
       ) : (

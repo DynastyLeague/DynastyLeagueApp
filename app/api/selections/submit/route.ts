@@ -37,20 +37,29 @@ export async function POST(request: NextRequest) {
     );
 
     // Prepare new selection data (matching your exact headers)
-    const newRows = selections.map((selection: any) => [
-      week,                    // A: week
-      matchupId || '',         // B: matchup_id column
-      teamId,                  // C: team_id
-      teamName,                // D: team_name
-      opponentTeamName || '',  // E: opp_team_name column
-      selection.position,      // F: positions column
-      selection.playerId,      // G: player_id
-      selection.playerName,    // H: player_name
-      selection.nbaTeam,       // I: nba_team
-      selection.gameDate,      // J: game_date
-      selection.selectedGame || '', // K: selected_game (formatted game title)
-      new Date().toISOString() // L: submitted_date_time
-    ]);
+    const newRows = selections.map((selection: unknown) => {
+      const sel = selection as {
+        position: string;
+        playerId: string;
+        playerName: string;
+        nbaTeam: string;
+        gameDate: string;
+        selectedGame?: string;
+      };
+        week,                    // A: week
+        matchupId || '',         // B: matchup_id column
+        teamId,                  // C: team_id
+        teamName,                // D: team_name
+        opponentTeamName || '',  // E: opp_team_name column
+        sel.position,            // F: positions column
+        sel.playerId,            // G: player_id
+        sel.playerName,          // H: player_name
+        sel.nbaTeam,             // I: nba_team
+        sel.gameDate,            // J: game_date
+        sel.selectedGame || '',  // K: selected_game (formatted game title)
+        new Date().toISOString() // L: submitted_date_time
+      ];
+    });
 
     // Combine filtered existing rows with new selections
     const allRows = [headerRow, ...filteredRows, ...newRows];

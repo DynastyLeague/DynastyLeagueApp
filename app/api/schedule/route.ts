@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([]);
     }
 
-    let games = rows.slice(1).map((row, index) => ({
+    let games = rows.slice(1).map((row) => ({
       week: parseInt(row[0]) || 0,
       nbaTeam: row[1] || '',
       date: row[2] || '',

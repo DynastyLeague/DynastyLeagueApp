@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=3600' },
     });
-  } catch (e) {
+  } catch {
     return new NextResponse('Error fetching image', { status: 500 });
   }
 }

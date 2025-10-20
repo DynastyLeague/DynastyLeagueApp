@@ -146,12 +146,10 @@ export default function DetailedMatchupPage() {
 
   const PlayerStatsBox = ({ 
     selection, 
-    isTeam1, 
-    positionLabel 
+    isTeam1
   }: { 
     selection: Selection | undefined; 
-    isTeam1: boolean; 
-    positionLabel: string;
+    isTeam1: boolean;
   }) => {
     if (!selection) {
       return (
@@ -480,7 +478,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "GUARD 1")} 
               isTeam1={true} 
-              positionLabel="GUARD 1" 
             />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
@@ -493,7 +490,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "GUARD 1")} 
               isTeam1={false} 
-              positionLabel="GUARD 1" 
             />
           </div>
 
@@ -505,7 +501,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "GUARD 2")} 
               isTeam1={true} 
-              positionLabel="GUARD 2" 
             />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
@@ -518,7 +513,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "GUARD 2")} 
               isTeam1={false} 
-              positionLabel="GUARD 2" 
             />
           </div>
 
@@ -530,8 +524,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "FORWARD 1")} 
               isTeam1={true} 
-              positionLabel="FORWARD 1" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -543,7 +536,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "FORWARD 1")} 
               isTeam1={false} 
-              positionLabel="FORWARD 1" 
             />
           </div>
 
@@ -555,8 +547,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "FORWARD 2")} 
               isTeam1={true} 
-              positionLabel="FORWARD 2" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -568,7 +559,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "FORWARD 2")} 
               isTeam1={false} 
-              positionLabel="FORWARD 2" 
             />
           </div>
 
@@ -580,8 +570,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "CENTER")} 
               isTeam1={true} 
-              positionLabel="CENTER" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -593,7 +582,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "CENTER")} 
               isTeam1={false} 
-              positionLabel="CENTER" 
             />
           </div>
 
@@ -605,8 +593,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "FLEX 1")} 
               isTeam1={true} 
-              positionLabel="FLEX 1" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -618,7 +605,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "FLEX 1")} 
               isTeam1={false} 
-              positionLabel="FLEX 1" 
             />
           </div>
 
@@ -630,8 +616,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "FLEX 2")} 
               isTeam1={true} 
-              positionLabel="FLEX 2" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -643,7 +628,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "FLEX 2")} 
               isTeam1={false} 
-              positionLabel="FLEX 2" 
             />
           </div>
         </div>
@@ -666,8 +650,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "RES GUARD")} 
               isTeam1={true} 
-              positionLabel="RES GUARD" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -679,7 +662,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "RES GUARD")} 
               isTeam1={false} 
-              positionLabel="RES GUARD" 
             />
           </div>
 
@@ -691,8 +673,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "RES FORWARD/CENTER")} 
               isTeam1={true} 
-              positionLabel="RES FORWARD/CENTER" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -704,7 +685,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "RES FORWARD/CENTER")} 
               isTeam1={false} 
-              positionLabel="RES FORWARD/CENTER" 
             />
           </div>
 
@@ -716,8 +696,7 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team1Selections, "RES FLEX")} 
               isTeam1={true} 
-              positionLabel="RES FLEX" 
-            />
+                          />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
@@ -729,7 +708,6 @@ export default function DetailedMatchupPage() {
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "RES FLEX")} 
               isTeam1={false} 
-              positionLabel="RES FLEX" 
             />
           </div>
         </div>

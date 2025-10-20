@@ -12,7 +12,6 @@ export default function MatchupPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,38 +51,6 @@ export default function MatchupPage() {
     return teams.find(team => team.teamId === teamId);
   };
 
-  const splitTeamName = (teamName: string) => {
-    // Custom splitting logic for specific team names
-    const customSplits: { [key: string]: string[] } = {
-      'Bort Chasing Boards': ['Bort Chasing', 'Boards'],
-      'Easy Money Magnets': ['Easy Money', 'Magnets'],
-      'Jacka\'s Jokers': ['Jacka\'s', 'Jokers'],
-      'Squib Nation': ['Squib', 'Nation'],
-      'Sonny Testarossas': ['Sonny', 'Testarossas'],
-      'Memphis Gunslingers': ['Memphis', 'Gunslingers'],
-      'Point Cooked': ['Point', 'Cooked'],
-      'Tragic Bronsons': ['Tragic', 'Bronsons'],
-      'Forever Young, Forever Wemby': ['Forever Young,', 'Forever Wemby'],
-      'Willsy\'s Gentlemen': ['Willsy\'s', 'Gentlemen'],
-      'Glenroy Gorillas': ['Glenroy', 'Gorillas'],
-      'Armstrong\'s Army': ['Armstrong\'s', 'Army'],
-      'Winchelsea Hardons': ['Winchelsea', 'Hardons'],
-      'Highton Hellrayzors': ['Highton', 'Hellrayzors']
-    };
-
-    if (customSplits[teamName]) {
-      return customSplits[teamName];
-    }
-
-    // Default splitting logic
-    const words = teamName.split(' ');
-    if (words.length <= 2) {
-      return [teamName];
-    }
-    
-    const mid = Math.ceil(words.length / 2);
-    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -101,7 +68,6 @@ export default function MatchupPage() {
   };
 
   const filteredMatchups = matchups.filter(matchup => matchup.week === selectedWeek);
-  const selectedWeekData = weekDates.find(week => week.week === selectedWeek);
 
   if (isLoading) {
     return (
