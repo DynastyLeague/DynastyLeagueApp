@@ -15,7 +15,7 @@ export default function TeamPage() {
   const [active, setActive] = useState<Player[]>([]);
   const [dev, setDev] = useState<Player[]>([]);
   const [inj, setInj] = useState<Player[]>([]);
-  const [draftPicks, setDraftPicks] = useState<unknown>(null);
+  const [draftPicks, setDraftPicks] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
