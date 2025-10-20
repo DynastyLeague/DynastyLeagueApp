@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Matchup, WeekDate, Team } from '@/lib/types';
@@ -31,10 +30,9 @@ export default function MatchupPage() {
           setWeekDates(weekDatesData);
           setTeams(teamsData);
 
-          // Set current week as default
-          const currentWeek = weekDatesData.find((week: WeekDate) => week.isCurrent);
-          if (currentWeek) {
-            setSelectedWeek(currentWeek.week);
+          // Set first week as default (or you can implement logic to determine current week)
+          if (weekDatesData.length > 0) {
+            setSelectedWeek(weekDatesData[0].week);
           }
         }
       } catch (error) {
