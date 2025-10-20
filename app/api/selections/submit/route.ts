@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
         gameDate: string;
         selectedGame?: string;
       };
+      return [
         week,                    // A: week
         matchupId || '',         // B: matchup_id column
         teamId,                  // C: team_id
