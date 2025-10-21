@@ -53,20 +53,20 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
                   <td className="px-4 py-3 text-sm text-gray-300">{player.position}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{player.age}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{player.rankType}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.rankAvg}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["25-26"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["26-27"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["27-28"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["28-29"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["29-30"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["30-31"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${player.contractYears["31-32"]}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.contractYear}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{player.careerRank}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary25_26 === 'number' ? player.salary25_26 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary26_27 === 'number' ? player.salary26_27 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary27_28 === 'number' ? player.salary27_28 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary28_29 === 'number' ? player.salary28_29 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary29_30 === 'number' ? player.salary29_30 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary30_31 === 'number' ? player.salary30_31 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary31_32 === 'number' ? player.salary31_32 : '—'}M</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{player.contractLength}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{player.signedVia}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{player.contractNotes}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.option}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.acceptDecline}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.extElig}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{player.option25_26}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">—</td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{player.extension}</td>
                 </tr>
               ))}
               
