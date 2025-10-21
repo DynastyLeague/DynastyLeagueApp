@@ -51,6 +51,7 @@ export type Player = {
   rank25_26: string;
   rank26_27: string;
   rank27_28: string;
+  rank28_29: string;
   careerEarnings: string;
   
   // Salaries (can be numbers or contract status strings like "EXT/UFA", "RFA", "UFA")
@@ -72,12 +73,13 @@ export type Player = {
   option30_31: string;
   salary31_32: number | string;
   option31_32: string;
-  salary32_33: number;
+  salary32_33: number | string;
   option32_33: string;
-  salary33_34: number;
+  salary33_34: number | string;
   option33_34: string;
-  salary34_35: number;
+  salary34_35: number | string;
   option34_35: string;
+  photo: string;
 };
 
 export type RosterPlayer = {
