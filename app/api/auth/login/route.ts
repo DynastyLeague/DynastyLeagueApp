@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
         const refreshTtl = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 7; // 60d vs 7d
         const refresh = await signSession({ teamId, teamName, role }, refreshTtl);
 
-    setAccessCookie(access, 60 * 60);
-    setRefreshCookie(refresh, refreshTtl);
+        await setAccessCookie(access, 60 * 60);
+        await setRefreshCookie(refresh, refreshTtl);
 
     return NextResponse.json({ teamId, teamName, role });
   } catch (e) {

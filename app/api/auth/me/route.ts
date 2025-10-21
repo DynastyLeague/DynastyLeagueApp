@@ -11,7 +11,7 @@ export async function GET() {
   if (refresh) {
     // auto-refresh access
     const newAccess = await signSession({ teamId: refresh.teamId, teamName: refresh.teamName, role: refresh.role }, 60 * 60);
-    setAccessCookie(newAccess, 60 * 60);
+    await setAccessCookie(newAccess, 60 * 60);
     return NextResponse.json({ teamId: refresh.teamId, teamName: refresh.teamName, role: refresh.role });
   }
   return NextResponse.json({ teamId: null }, { status: 401 });

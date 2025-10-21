@@ -71,8 +71,9 @@ function timingSafeEqual(a: string, b: string): boolean {
   return result === 0;
 }
 
-export function setAccessCookie(token: string, maxAgeSeconds: number) {
-  cookies().set(ACCESS_COOKIE, token, {
+export async function setAccessCookie(token: string, maxAgeSeconds: number) {
+  const cookieStore = await cookies();
+  cookieStore.set(ACCESS_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
@@ -81,8 +82,9 @@ export function setAccessCookie(token: string, maxAgeSeconds: number) {
   });
 }
 
-export function setRefreshCookie(token: string, maxAgeSeconds: number) {
-  cookies().set(REFRESH_COOKIE, token, {
+export async function setRefreshCookie(token: string, maxAgeSeconds: number) {
+  const cookieStore = await cookies();
+  cookieStore.set(REFRESH_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
@@ -91,19 +93,22 @@ export function setRefreshCookie(token: string, maxAgeSeconds: number) {
   });
 }
 
-export function clearAuthCookies() {
+export async function clearAuthCookies() {
   const secure = process.env.NODE_ENV === 'production';
-  cookies().set(ACCESS_COOKIE, '', { httpOnly: true, sameSite: 'lax', secure, path: '/', maxAge: 0 });
-  cookies().set(REFRESH_COOKIE, '', { httpOnly: true, sameSite: 'lax', secure, path: '/', maxAge: 0 });
+  const cookieStore = await cookies();
+  cookieStore.set(ACCESS_COOKIE, '', { httpOnly: true, sameSite: 'lax', secure, path: '/', maxAge: 0 });
+  cookieStore.set(REFRESH_COOKIE, '', { httpOnly: true, sameSite: 'lax', secure, path: '/', maxAge: 0 });
 }
 
 export async function readAccess(): Promise<SessionPayload | null> {
-  const token = cookies().get(ACCESS_COOKIE)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ACCESS_COOKIE)?.value;
   return verifySession(token);
 }
 
 export async function readRefresh(): Promise<SessionPayload | null> {
-  const token = cookies().get(REFRESH_COOKIE)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(REFRESH_COOKIE)?.value;
   return verifySession(token);
 }
 
