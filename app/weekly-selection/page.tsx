@@ -30,7 +30,7 @@ export default function WeeklySelectionPage() {
   const [matchups, setMatchups] = useState<Matchup[]>([]);
   const [weekDates, setWeekDates] = useState<WeekDate[]>([]);
   const [games, setGames] = useState<Game[]>([]);
-  const [currentWeek, setCurrentWeek] = useState<number>(1);
+  const [currentWeek, setCurrentWeek] = useState<number>(0);
   const [currentMatchup, setCurrentMatchup] = useState<Matchup | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -221,14 +221,19 @@ export default function WeeklySelectionPage() {
         const weekDatesData: WeekDate[] = await weekDatesRes.json();
         setWeekDates(weekDatesData);
         
-        // Only set current week automatically if not overridden yet
-        if (!viewTeamId && (!currentWeek || currentWeek === 0)) {
-          const week = getCurrentWeek(weekDatesData);
-          setCurrentWeek(week);
+        // Calculate the current/upcoming week
+        const calculatedWeek = getCurrentWeek(weekDatesData);
+        
+        // Set current week on initial load (when currentWeek is 0)
+        if (currentWeek === 0) {
+          setCurrentWeek(calculatedWeek);
         }
         
+        // Use the calculated week or the already set week
+        const weekToLoad = currentWeek === 0 ? calculatedWeek : currentWeek;
+        
         // Load games for current week
-        const gamesRes = await fetch(`/api/schedule?week=${currentWeek || getCurrentWeek(weekDatesData)}`);
+        const gamesRes = await fetch(`/api/schedule?week=${weekToLoad}`);
         let gamesData: Game[] = [];
         if (gamesRes.ok) {
           gamesData = await gamesRes.json();
@@ -236,7 +241,7 @@ export default function WeeklySelectionPage() {
         }
 
         // Load previously submitted selections for the current week
-        await loadPreviousSelections(effectiveTeamId, currentWeek || getCurrentWeek(weekDatesData), gamesData);
+        await loadPreviousSelections(effectiveTeamId, weekToLoad, gamesData);
       }
     } catch (error) {
       console.error('Error loading data:', error);
