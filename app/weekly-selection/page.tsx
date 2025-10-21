@@ -449,11 +449,11 @@ export default function WeeklySelectionPage() {
             
             {/* Matchup Info */}
             <div className="w-1/2">
-              <div className="text-white text-2xl font-bold mb-2">
-                WEEK {currentWeek}
+              <div className="text-white text-2xl font-bold mb-1">
+                WEEK {currentWeek} vs
               </div>
               <div className="text-white text-xl font-bold mb-2">
-                vs {(() => {
+                {(() => {
                   const displayTeamId = viewTeamId || currentTeam?.teamId || '';
                   return currentMatchup.team1Id === displayTeamId ? 
                     currentMatchup.team2Name : currentMatchup.team1Name;
@@ -475,7 +475,7 @@ export default function WeeklySelectionPage() {
                     }
                     
                     const formatDate = (date: Date) => {
-                      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
                       const day = date.getDate();
                       const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
                       const year = date.getFullYear();

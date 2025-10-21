@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/lib/auth';
 
 interface BottomNavProps {
   currentTeam?: { teamId: string; teamName: string; mainLogo?: string } | null;
@@ -41,15 +42,15 @@ const ChevronUpIcon = () => (
 
 export default function BottomNav({ }: BottomNavProps) {
   const pathname = usePathname();
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const { currentTeam, logout } = useAuth();
 
   const navItems = [
     {
       name: 'HOME',
       href: '/',
       icon: HomeIcon,
-      isActive: pathname === '/',
-      isDropdown: true
+      isActive: pathname === '/'
     },
     {
       name: 'GAME PICK',
@@ -64,46 +65,32 @@ export default function BottomNav({ }: BottomNavProps) {
       isActive: pathname === '/matchups'
     },
     {
-      name: 'PLAYERS',
-      href: '/players',
-      icon: UsersIcon,
-      isActive: pathname === '/players'
-    },
-    {
-      name: 'LEAGUE',
-      href: '/league',
+      name: 'PROFILE',
+      href: '#',
       icon: HomeIcon,
-      isActive: pathname === '/league'
+      isActive: false,
+      isProfile: true
     }
   ];
 
-  const dropdownItems = [
-    { name: 'Rosters', href: '/rosters' },
-    { name: 'Draft Picks', href: '/draft-picks' },
-    { name: 'Transactions', href: '/transactions' },
-    { name: 'Free Agents', href: '/free-agents' },
-    { name: 'Award Winners', href: '/awards' },
-    { name: 'Records', href: '/records' },
-    { name: 'Constitution', href: '/constitution' }
-  ];
 
   return (
     <>
-      {/* Dropdown Menu */}
-      {showDropdown && (
-        <div className="fixed bottom-24 left-0 right-0 bg-white border-2 border-black shadow-lg z-40 pb-8">
-          <div className="py-2">
-            {dropdownItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block w-full text-center py-3 text-black hover:bg-gray-100 transition-colors"
-                onClick={() => setShowDropdown(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+
+      {/* Profile Menu */}
+      {showProfileMenu && currentTeam && (
+        <div className="fixed bottom-24 right-4 bg-gray-800 text-white shadow-xl p-2 min-w-[140px] z-40">
+          <div className="px-2 py-1 text-xs text-gray-300">{currentTeam.teamName}</div>
+          <button 
+            onClick={async () => { 
+              setShowProfileMenu(false); 
+              await logout(); 
+              location.href = '/login'; 
+            }} 
+            className="w-full text-left px-2 py-1 hover:bg-gray-700"
+          >
+            Log out
+          </button>
         </div>
       )}
 
@@ -114,25 +101,48 @@ export default function BottomNav({ }: BottomNavProps) {
             const Icon = item.icon;
             return (
               <div key={item.name} className="relative">
-                {item.isDropdown ? (
+                {item.isProfile ? (
                   <button
-                    onClick={() => setShowDropdown(!showDropdown)}
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className={`nav-item ${item.isActive ? 'active' : ''}`}
+                  >
+                    {/* Team Logo */}
+                    {currentTeam ? (
+                      <div className="relative">
+                        <img
+                          src={`/logos/${currentTeam.teamId}-main.png.png`}
+                          alt={`${currentTeam.teamName} logo`}
+                          className="w-16 h-16 object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = 'block';
+                          }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center text-black text-xs font-bold hidden">
+                          {currentTeam.teamName?.slice(0,2).toUpperCase()}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-400 flex items-center justify-center">
+                        <span className="text-black text-xs font-bold">LO</span>
+                      </div>
+                    )}
+                    <span className="nav-item-label"></span>
+                  </button>
+                ) : item.name === 'HOME' ? (
+                  <Link
+                    href={item.href}
                     className={`nav-item ${item.isActive ? 'active' : ''}`}
                   >
                     {/* League Logo */}
-                    <div className="relative">
-                      <img
-                        src={`/api/image?url=${encodeURIComponent("https://drive.google.com/uc?export=view&id=1hOy_hcD3zCKG4ajLx9fSgZcF4Wp1Rfqo")}`}
-                        alt="Dynasty League"
-                        className="w-16 h-16 object-contain"
-                      />
-                      {/* Dropdown Indicator */}
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border border-black flex items-center justify-center">
-                        <ChevronUpIcon />
-                      </div>
-                    </div>
-                    <span className="nav-item-label"></span>
-                  </button>
+                    <img
+                      src={`/api/image?url=${encodeURIComponent("https://drive.google.com/uc?export=view&id=1hOy_hcD3zCKG4ajLx9fSgZcF4Wp1Rfqo")}`}
+                      alt="Dynasty League"
+                      className="w-16 h-16 object-contain"
+                    />
+                    <span className="nav-item-label">{item.name}</span>
+                  </Link>
                 ) : (
                   <Link
                     href={item.href}
