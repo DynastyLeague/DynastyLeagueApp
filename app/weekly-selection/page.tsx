@@ -38,25 +38,39 @@ export default function WeeklySelectionPage() {
   const [submittedSelections, setSubmittedSelections] = useState<unknown[]>([]);
   const [viewTeamId, setViewTeamId] = useState<string | null>(null);
 
-  // Determine current week based on Australia EST
-  const getCurrentWeek = (weekDates: WeekDate[]): number => {
-    const now = new Date();
-    const ausTime = new Date(now.toLocaleString("en-US", { timeZone: "Australia/Sydney" }));
-    
-    // Sort weeks by week number to ensure proper order
-    const sortedWeeks = [...weekDates].sort((a, b) => a.week - b.week);
-    
-    for (const week of sortedWeeks) {
-      const startDate = new Date(week.startDate);
-      
-      // If current time is before this week's start date, this is the upcoming week
-      if (ausTime < startDate) {
-        return week.week;
+  // Determine current week based on current date from Google Sheets
+  const getCurrentWeek = async (weekDates: WeekDate[]): Promise<number> => {
+    try {
+      // Fetch current date/time from TodaysDate tab
+      const currentTimeRes = await fetch('/api/current-time');
+      if (!currentTimeRes.ok) {
+        console.error('Failed to fetch current time');
+        return 1;
       }
+      
+      const { date: todaysDate } = await currentTimeRes.json();
+      
+      // Parse the current date (format should be like "22/10/2024")
+      const currentDate = new Date(todaysDate);
+      
+      // Sort weeks by week number to ensure proper order
+      const sortedWeeks = [...weekDates].sort((a, b) => a.week - b.week);
+      
+      for (const week of sortedWeeks) {
+        const startDate = new Date(week.startDate);
+        
+        // If current date is before this week's start date, this is the upcoming week
+        if (currentDate < startDate) {
+          return week.week;
+        }
+      }
+      
+      // If we're past all week start dates, return the last week
+      return sortedWeeks[sortedWeeks.length - 1]?.week || 1;
+    } catch (error) {
+      console.error('Error calculating current week:', error);
+      return 1;
     }
-    
-    // If we're past all week start dates, return the last week
-    return sortedWeeks[sortedWeeks.length - 1]?.week || 1;
   };
 
   // Filter players by position
@@ -222,7 +236,7 @@ export default function WeeklySelectionPage() {
         setWeekDates(weekDatesData);
         
         // Calculate the current/upcoming week
-        const calculatedWeek = getCurrentWeek(weekDatesData);
+        const calculatedWeek = await getCurrentWeek(weekDatesData);
         
         // Set current week on initial load (when currentWeek is 0)
         if (currentWeek === 0) {
