@@ -156,9 +156,9 @@ export default function MatchupPage() {
 
                 {/* Scores */}
                 <div className="text-center px-4 sm:px-12 flex-shrink-0 min-w-0">
-                  <div className="text-white text-2xl sm:text-4xl font-bold flex items-center justify-center">
+                  <div className="text-white text-2xl sm:text-4xl font-bold flex items-center justify-center gap-3 sm:gap-6">
                     <span className="min-w-[2rem] sm:min-w-[3rem]">{matchup.team1Score}</span>
-                    <span className="text-sm sm:text-lg mx-4 sm:mx-12 text-gray-300">vs</span>
+                    <span className="text-sm sm:text-lg text-gray-300">vs</span>
                     <span className="min-w-[2rem] sm:min-w-[3rem]">{matchup.team2Score}</span>
                   </div>
                 </div>

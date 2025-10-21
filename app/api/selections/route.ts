@@ -39,19 +39,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Map to selection objects (schema aligns with Selections tab headers)
+    // Headers: week matchup_id team_id team_name opp_team_name positions player_id player_name nba_team game_date nba_opposition submitted_date_time
     const baseSelections = filteredRows.map(row => ({
-      week: parseInt(row[0]) || 0,
-      matchupId: row[1] || '',
-      teamId: row[2] || '',
-      teamName: row[3] || '',
-      opponentTeamName: row[4] || '',
-      position: row[5] || '',
-      playerId: row[6] || '',
-      playerName: row[7] || '',
-      nbaTeam: row[8] || '',
-      gameDate: row[9] || '',
-      selectedGame: row[10] || '',
-      submittedDateTime: row[11] || '',
+      week: parseInt(row[0]) || 0,          // A: week
+      matchupId: row[1] || '',               // B: matchup_id
+      teamId: row[2] || '',                  // C: team_id
+      teamName: row[3] || '',                // D: team_name
+      opponentTeamName: row[4] || '',        // E: opp_team_name
+      position: row[5] || '',                // F: positions
+      playerId: row[6] || '',                // G: player_id
+      playerName: row[7] || '',              // H: player_name
+      nbaTeam: row[8] || '',                 // I: nba_team
+      gameDate: row[9] || '',                // J: game_date
+      nbaOpposition: row[10] || '',          // K: nba_opposition
+      submittedDateTime: row[11] || '',      // L: submitted_date_time
+      selectedGame: row[10] || '',           // Kept for backwards compatibility, same as nbaOpposition
     }));
 
     // Enrich with photoUrl by looking up Players sheet by player name (column B) → photo in column BB

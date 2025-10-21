@@ -314,6 +314,19 @@ export default function WeeklySelectionPage() {
     }));
   };
 
+  const handleResetSlot = (slotId: string) => {
+    setLineup(prev => ({
+      ...prev,
+      [slotId]: {
+        id: slotId,
+        name: prev[slotId]?.name || '',
+        position: prev[slotId]?.position || 'ANY',
+        playerId: undefined,
+        gameId: undefined,
+      }
+    }));
+  };
+
   // Check if all selections are complete
   const isSubmissionReady = (): boolean => {
     const allSlots = [...STARTER_SLOTS, ...RESERVE_SLOTS];
@@ -608,7 +621,16 @@ export default function WeeklySelectionPage() {
 
                 return (
                   <div key={slot.id} className="p-3 bg-gray-700 rounded-lg">
-                    <div className="text-white mb-2 font-bold text-2xl">{slot.name}</div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-white font-bold text-2xl">{slot.name}</div>
+                      <button
+                        onClick={() => handleResetSlot(slot.id)}
+                        className="text-red-500 hover:text-red-400 font-bold text-xl px-2 py-1"
+                        title="Clear this position"
+                      >
+                        ✕
+                      </button>
+                    </div>
                     <div className="grid grid-cols-3 gap-2">
                       <select
                         className="col-span-2 bg-gray-600 text-white border-2 border-gray-500 px-3 py-2 rounded-none"
@@ -657,7 +679,16 @@ export default function WeeklySelectionPage() {
 
                 return (
                   <div key={slot.id} className="p-3 bg-gray-700 rounded-lg">
-                    <div className="text-white mb-2 font-bold text-2xl">{slot.name}</div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-white font-bold text-2xl">{slot.name}</div>
+                      <button
+                        onClick={() => handleResetSlot(slot.id)}
+                        className="text-red-500 hover:text-red-400 font-bold text-xl px-2 py-1"
+                        title="Clear this position"
+                      >
+                        ✕
+                      </button>
+                    </div>
                     <div className="grid grid-cols-3 gap-2">
                       <select
                         className="col-span-2 bg-gray-600 text-white border-2 border-gray-500 px-3 py-2 rounded-none"

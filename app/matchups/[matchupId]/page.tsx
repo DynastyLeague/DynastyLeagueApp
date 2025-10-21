@@ -85,10 +85,10 @@ export default function DetailedMatchupPage() {
   };
 
   const formatGameDisplay = (selection: Selection) => {
-    // Desired: "Wednesday OKC vs HOU" or "Wednesday OKC @ HOU"
+    // Desired: "Wed OKC vs HOU"
     const { gameDate, nbaOpposition, nbaTeam } = selection;
 
-    // 1) Day name from gameDate
+    // 1) Get short day name from gameDate
     let dayName = '';
     if (gameDate) {
       try {
@@ -100,24 +100,27 @@ export default function DetailedMatchupPage() {
           }
         }
         if (!isNaN(date.getTime())) {
-          dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+          dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
         }
       } catch {}
     }
 
-    // 2) Parse opposition text, which may look like "Wed vs HOU", "Tue @ LAL", or just "HOU"
+    // 2) Parse opposition text, which may look like "Wed vs HOU", "vs HOU", "@ HOU", or just "HOU"
     let indicator = 'vs';
     let opponent = '';
     const oppRaw = (nbaOpposition || '').trim();
 
-    // Prefer explicit indicator in the string
-    const match = oppRaw.match(/(?:vs|@)\s*([A-Za-z]+)/i);
+    // Remove day from opposition if it exists (e.g., "Wed vs HOU" -> "vs HOU")
+    const oppWithoutDay = oppRaw.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+/i, '');
+
+    // Check for vs or @ indicator
+    const match = oppWithoutDay.match(/(?:vs|@)\s*([A-Z]{2,3})/i);
     if (match) {
-      indicator = oppRaw.toLowerCase().includes('@') ? '@' : 'vs';
-      opponent = (match[1] || '').replace(/[^A-Za-z]/g, '').toUpperCase();
-    } else if (oppRaw) {
+      indicator = oppWithoutDay.toLowerCase().includes('@') ? '@' : 'vs';
+      opponent = (match[1] || '').toUpperCase();
+    } else if (oppWithoutDay) {
       // No indicator present; take the last token as team code
-      const tokens = oppRaw.split(/\s+/);
+      const tokens = oppWithoutDay.split(/\s+/);
       opponent = (tokens[tokens.length - 1] || '').replace(/[^A-Za-z]/g, '').toUpperCase();
     }
 
@@ -125,7 +128,8 @@ export default function DetailedMatchupPage() {
       return dayName || 'No Game Selected';
     }
 
-    return `${dayName ? dayName + ' ' : ''}${nbaTeam} ${indicator} ${opponent}`;
+    // Format: "Wed OKC vs HOU"
+    return `${dayName} ${nbaTeam} ${indicator} ${opponent}`;
   };
 
   const formatStatValue = (value: number | undefined, isPercentage: boolean = false) => {
@@ -226,8 +230,8 @@ export default function DetailedMatchupPage() {
       <div className={`w-[45%] bg-gray-700 p-8 relative`}>
         {/* Corner photo (only if photo exists) */}
         {selection.photoUrl && (
-          <div className={`absolute -top-1 ${isTeam1 ? '-right-3' : '-left-3'} w-8 h-8 flex items-center justify-center overflow-hidden`}>
-            <Image src={selection.photoUrl} alt={selection.playerName} width={32} height={32} className="object-contain w-8 h-8 p-1" />
+          <div className={`absolute top-2 ${isTeam1 ? 'right-0' : 'left-0'} w-6 h-6 flex items-center justify-center`}>
+            <Image src={selection.photoUrl} alt={selection.playerName} width={26} height={26} className="object-contain w-full h-full" />
           </div>
         )}
  
@@ -369,7 +373,7 @@ export default function DetailedMatchupPage() {
           <div className="text-center px-4 sm:px-8">
             <div className="flex items-baseline justify-center text-white">
               <span className={`text-4xl sm:text-6xl font-bold min-w-[2rem] sm:min-w-[3rem] ${((matchup?.team1Score || 0) > (matchup?.team2Score || 0)) ? 'text-green-400' : ((matchup?.team1Score || 0) < (matchup?.team2Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team1Score || 0}</span>
-              <span className="text-2xl sm:text-4xl font-bold mx-4 sm:mx-6 text-gray-300">vs</span>
+              <span className="text-2xl sm:text-4xl font-bold mx-4 sm:mx-6 text-gray-300"> vs </span>
               <span className={`text-4xl sm:text-6xl font-bold min-w-[2rem] sm:min-w-[3rem] ${((matchup?.team2Score || 0) > (matchup?.team1Score || 0)) ? 'text-green-400' : ((matchup?.team2Score || 0) < (matchup?.team1Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team2Score || 0}</span>
             </div>
           </div>
