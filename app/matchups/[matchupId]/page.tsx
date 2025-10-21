@@ -488,7 +488,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 GUARD 1
               </div>
             </div>
@@ -511,7 +511,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 GUARD 2
               </div>
             </div>
@@ -534,7 +534,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 FORWARD 1
               </div>
             </div>
@@ -557,7 +557,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 FORWARD 2
               </div>
             </div>
@@ -580,7 +580,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 CENTER
               </div>
             </div>
@@ -603,7 +603,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 GUARD/FORWARD
               </div>
             </div>
@@ -626,7 +626,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 FORWARD/CENTER
               </div>
             </div>
@@ -649,7 +649,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 FLEX 1
               </div>
             </div>
@@ -672,7 +672,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 FLEX 2
               </div>
             </div>
@@ -706,7 +706,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 RES GUARD
               </div>
             </div>
@@ -729,7 +729,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 RES FORWARD/CENTER
               </div>
             </div>
@@ -752,7 +752,7 @@ export default function DetailedMatchupPage() {
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
             <div className="w-[10%] flex justify-center items-center">
-              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
+              <div className="text-gray-400 text-sm font-bold whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                 RES FLEX
               </div>
             </div>
