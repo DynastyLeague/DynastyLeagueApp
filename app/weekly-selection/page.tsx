@@ -49,23 +49,58 @@ export default function WeeklySelectionPage() {
       }
       
       const { date: todaysDate } = await currentTimeRes.json();
+      console.log('TodaysDate from sheet:', todaysDate);
       
-      // Parse the current date (format should be like "22/10/2024")
-      const currentDate = new Date(todaysDate);
+      // Parse the current date - handle DD/MM/YYYY format
+      let currentDate: Date;
+      if (todaysDate.includes('/')) {
+        const parts = todaysDate.split('/');
+        if (parts.length === 3) {
+          // Assuming DD/MM/YYYY format
+          const day = parseInt(parts[0]);
+          const month = parseInt(parts[1]) - 1; // JavaScript months are 0-indexed
+          const year = parseInt(parts[2]);
+          currentDate = new Date(year, month, day);
+        } else {
+          currentDate = new Date(todaysDate);
+        }
+      } else {
+        currentDate = new Date(todaysDate);
+      }
+      
+      console.log('Parsed current date:', currentDate);
       
       // Sort weeks by week number to ensure proper order
       const sortedWeeks = [...weekDates].sort((a, b) => a.week - b.week);
       
       for (const week of sortedWeeks) {
-        const startDate = new Date(week.startDate);
+        // Parse start date in the same way
+        let startDate: Date;
+        if (week.startDate.includes('/')) {
+          const parts = week.startDate.split('/');
+          if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const year = parseInt(parts[2]);
+            startDate = new Date(year, month, day);
+          } else {
+            startDate = new Date(week.startDate);
+          }
+        } else {
+          startDate = new Date(week.startDate);
+        }
+        
+        console.log(`Week ${week.week} start date:`, startDate, 'Current < Start:', currentDate < startDate);
         
         // If current date is before this week's start date, this is the upcoming week
         if (currentDate < startDate) {
+          console.log(`Returning week ${week.week} as upcoming week`);
           return week.week;
         }
       }
       
       // If we're past all week start dates, return the last week
+      console.log('Past all weeks, returning last week:', sortedWeeks[sortedWeeks.length - 1]?.week || 1);
       return sortedWeeks[sortedWeeks.length - 1]?.week || 1;
     } catch (error) {
       console.error('Error calculating current week:', error);
