@@ -47,15 +47,15 @@ export default function WeeklySelectionPage() {
     const sortedWeeks = [...weekDates].sort((a, b) => a.week - b.week);
     
     for (const week of sortedWeeks) {
-      const finishDate = new Date(week.finishDate);
+      const startDate = new Date(week.startDate);
       
-      // If current time is before this week's finish date, this is the current week
-      if (ausTime <= finishDate) {
+      // If current time is before this week's start date, this is the upcoming week
+      if (ausTime < startDate) {
         return week.week;
       }
     }
     
-    // If we're past all weeks, return the last week
+    // If we're past all week start dates, return the last week
     return sortedWeeks[sortedWeeks.length - 1]?.week || 1;
   };
 

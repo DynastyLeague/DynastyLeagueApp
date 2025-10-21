@@ -371,9 +371,9 @@ export default function DetailedMatchupPage() {
 
           {/* Score */}
           <div className="text-center px-4 sm:px-8">
-            <div className="flex items-baseline justify-center text-white">
+            <div className="flex items-baseline justify-center text-white gap-3 sm:gap-6">
               <span className={`text-4xl sm:text-6xl font-bold min-w-[2rem] sm:min-w-[3rem] ${((matchup?.team1Score || 0) > (matchup?.team2Score || 0)) ? 'text-green-400' : ((matchup?.team1Score || 0) < (matchup?.team2Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team1Score || 0}</span>
-              <span className="text-2xl sm:text-4xl font-bold mx-4 sm:mx-6 text-gray-300"> vs </span>
+              <span className="text-2xl sm:text-4xl font-bold text-gray-300">vs</span>
               <span className={`text-4xl sm:text-6xl font-bold min-w-[2rem] sm:min-w-[3rem] ${((matchup?.team2Score || 0) > (matchup?.team1Score || 0)) ? 'text-green-400' : ((matchup?.team2Score || 0) < (matchup?.team1Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team2Score || 0}</span>
             </div>
           </div>
