@@ -487,8 +487,8 @@ export default function DetailedMatchupPage() {
             />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 GUARD 1
               </div>
             </div>
@@ -510,8 +510,8 @@ export default function DetailedMatchupPage() {
             />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 GUARD 2
               </div>
             </div>
@@ -533,8 +533,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 FORWARD 1
               </div>
             </div>
@@ -556,8 +556,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 FORWARD 2
               </div>
             </div>
@@ -579,8 +579,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 CENTER
               </div>
             </div>
@@ -602,8 +602,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 GUARD/FORWARD
               </div>
             </div>
@@ -625,8 +625,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 FORWARD/CENTER
               </div>
             </div>
@@ -648,8 +648,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 FLEX 1
               </div>
             </div>
@@ -671,8 +671,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 FLEX 2
               </div>
             </div>
@@ -705,8 +705,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 RES GUARD
               </div>
             </div>
@@ -728,8 +728,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 RES FORWARD/CENTER
               </div>
             </div>
@@ -751,8 +751,8 @@ export default function DetailedMatchupPage() {
                           />
 
             {/* Column 2: Position Label (Rotated) - Extends full height */}
-            <div className="w-[10%] flex justify-center items-center h-full min-h-[200px]">
-              <div className="text-gray-400 text-lg font-bold transform -rotate-90 origin-center whitespace-nowrap">
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-sm font-bold transform -rotate-90 origin-center whitespace-nowrap">
                 RES FLEX
               </div>
             </div>
