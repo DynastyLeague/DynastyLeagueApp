@@ -146,27 +146,29 @@ export default function MatchupPage() {
                       return <span className="text-white text-base sm:text-sm">T1</span>;
                     })()}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-gray-400 text-lg sm:text-base mt-2">
-                      {matchup.team1Gp}/9 GP
+                  <div className="min-w-0 flex-1 text-left">
+                    <div className="text-gray-400 text-sm sm:text-base">
+                      <div className="font-bold">GP</div>
+                      <div>{matchup.team1Gp}/9</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Scores */}
-                <div className="text-center px-2 sm:px-8 flex-shrink-0 min-w-0">
-                  <div className="text-white text-3xl sm:text-4xl font-bold flex items-center justify-center">
-                    <span>{matchup.team1Score}</span>
-                    <span className="text-sm sm:text-lg mx-2 sm:mx-8">vs</span>
-                    <span>{matchup.team2Score}</span>
+                <div className="text-center px-4 sm:px-12 flex-shrink-0 min-w-0">
+                  <div className="text-white text-2xl sm:text-4xl font-bold flex items-center justify-center">
+                    <span className="min-w-[2rem] sm:min-w-[3rem]">{matchup.team1Score}</span>
+                    <span className="text-sm sm:text-lg mx-4 sm:mx-12 text-gray-300">vs</span>
+                    <span className="min-w-[2rem] sm:min-w-[3rem]">{matchup.team2Score}</span>
                   </div>
                 </div>
 
                 {/* Team 2 */}
                 <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0 justify-end">
                   <div className="min-w-0 flex-1 text-right">
-                    <div className="text-gray-400 text-sm sm:text-base mt-2">
-                      {matchup.team2Gp}/9 GP
+                    <div className="text-gray-400 text-sm sm:text-base">
+                      <div className="font-bold">GP</div>
+                      <div>{matchup.team2Gp}/9</div>
                     </div>
                   </div>
                   <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">

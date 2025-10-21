@@ -100,7 +100,7 @@ export default function DetailedMatchupPage() {
           }
         }
         if (!isNaN(date.getTime())) {
-          dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+          dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
         }
       } catch {}
     }
@@ -226,8 +226,8 @@ export default function DetailedMatchupPage() {
       <div className={`w-[45%] bg-gray-700 p-8 relative`}>
         {/* Corner photo (only if photo exists) */}
         {selection.photoUrl && (
-          <div className={`absolute -top-1 ${isTeam1 ? '-right-3' : '-left-3'} w-14 h-14 flex items-center justify-center overflow-hidden`}>
-            <Image src={selection.photoUrl} alt={selection.playerName} width={56} height={56} className="object-contain w-14 h-14 p-1" />
+          <div className={`absolute -top-1 ${isTeam1 ? '-right-3' : '-left-3'} w-8 h-8 flex items-center justify-center overflow-hidden`}>
+            <Image src={selection.photoUrl} alt={selection.playerName} width={32} height={32} className="object-contain w-8 h-8 p-1" />
           </div>
         )}
  
@@ -269,7 +269,7 @@ export default function DetailedMatchupPage() {
           </div>
 
           {/* Row 2: 4 stats */}
-          <div className="flex justify-center" style={{gap: '2rem'}}>
+          <div className="flex justify-center" style={{gap: '1.25rem'}}>
             <div className="text-center">
               <div className="text-gray-400 text-xs">STL</div>
               <div className="text-white text-sm font-bold">{formatStatValue(selection.stl)}</div>
@@ -283,7 +283,7 @@ export default function DetailedMatchupPage() {
               <div className="text-white text-sm font-bold">{formatStatValue(selection.orb)}</div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-xs">DREB</div>
+              <div className="text-gray-400 text-xs">DRB</div>
               <div className="text-white text-sm font-bold">{formatStatValue(selection.drb)}</div>
             </div>
           </div>
@@ -344,52 +344,52 @@ export default function DetailedMatchupPage() {
         </div>
 
         {/* Team Logos and Scores */}
-        <div className="flex items-center justify-center space-x-8 bg-gray-800 p-6">
+        <div className="flex items-center justify-center space-x-4 sm:space-x-8 bg-gray-800 p-4 sm:p-6">
           {/* Team 1 */}
           <div className="flex flex-col items-center">
-            <div className="w-32 h-32 flex items-center justify-center">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
               {team1?.teamId ? (
                 <Image
                   src={`/logos/${team1.teamId}-main.png.png`}
                   alt={team1.teamName}
-                  width={128}
-                  height={128}
-                  className="object-contain"
+                  width={80}
+                  height={80}
+                  className="object-contain w-20 h-20 sm:w-24 sm:h-24"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
               ) : (
-                <span className="text-white text-lg">T1</span>
+                <span className="text-white text-sm sm:text-lg">T1</span>
               )}
             </div>
           </div>
 
           {/* Score */}
-          <div className="text-center">
+          <div className="text-center px-4 sm:px-8">
             <div className="flex items-baseline justify-center text-white">
-              <span className={`text-6xl font-bold ${((matchup?.team1Score || 0) > (matchup?.team2Score || 0)) ? 'text-green-400' : ((matchup?.team1Score || 0) < (matchup?.team2Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{'\u00A0'}{matchup?.team1Score || 0}{'\u00A0'}</span>
-              <span className="text-4xl font-bold mx-6">vs</span>
-              <span className={`text-6xl font-bold ${((matchup?.team2Score || 0) > (matchup?.team1Score || 0)) ? 'text-green-400' : ((matchup?.team2Score || 0) < (matchup?.team1Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{'\u00A0'}{matchup?.team2Score || 0}{'\u00A0'}</span>
+              <span className={`text-4xl sm:text-6xl font-bold min-w-[2rem] sm:min-w-[3rem] ${((matchup?.team1Score || 0) > (matchup?.team2Score || 0)) ? 'text-green-400' : ((matchup?.team1Score || 0) < (matchup?.team2Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team1Score || 0}</span>
+              <span className="text-2xl sm:text-4xl font-bold mx-4 sm:mx-6 text-gray-300">vs</span>
+              <span className={`text-4xl sm:text-6xl font-bold min-w-[2rem] sm:min-w-[3rem] ${((matchup?.team2Score || 0) > (matchup?.team1Score || 0)) ? 'text-green-400' : ((matchup?.team2Score || 0) < (matchup?.team1Score || 0)) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team2Score || 0}</span>
             </div>
           </div>
 
           {/* Team 2 */}
           <div className="flex flex-col items-center">
-            <div className="w-32 h-32 flex items-center justify-center">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
               {team2?.teamId ? (
                 <Image
                   src={`/logos/${team2.teamId}-main.png.png`}
                   alt={team2.teamName}
-                  width={128}
-                  height={128}
-                  className="object-contain"
+                  width={80}
+                  height={80}
+                  className="object-contain w-20 h-20 sm:w-24 sm:h-24"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
               ) : (
-                <span className="text-white text-lg">T2</span>
+                <span className="text-white text-sm sm:text-lg">T2</span>
               )}
             </div>
           </div>
