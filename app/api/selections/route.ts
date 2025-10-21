@@ -13,11 +13,11 @@ export async function GET(request: NextRequest) {
     const sheets = await getSheetsClient();
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
 
-    // Fetch all player game stats data from the new PlayerGameStats tab
+    // Fetch all selections data from Selections tab
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      // Need all columns up to FT% (28 columns: A through AB)
-      range: 'PlayerGameStats!A:AB',
+      // Columns: week, matchup_id, team_id, team_name, opp_team_name, positions, player_id, player_name, nba_team, game_date, selected_game, submitted_date_time
+      range: 'Selections!A:L',
     });
 
     const rows = response.data.values || [];
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       filteredRows = filteredRows.filter(row => row[1] === matchupId);
     }
 
-    // Map to selection objects (schema aligns with PlayerGameStats headers)
+    // Map to selection objects (schema aligns with Selections tab headers)
     const baseSelections = filteredRows.map(row => ({
       week: parseInt(row[0]) || 0,
       matchupId: row[1] || '',
@@ -50,24 +50,8 @@ export async function GET(request: NextRequest) {
       playerName: row[7] || '',
       nbaTeam: row[8] || '',
       gameDate: row[9] || '',
-      nbaOpposition: row[10] || '',
+      selectedGame: row[10] || '',
       submittedDateTime: row[11] || '',
-      dateCode: row[12] || '',
-      time: row[13] || '',
-      min: parseInt(row[14]) || 0,
-      pts: parseInt(row[15]) || 0,
-      threePm: parseInt(row[16]) || 0,
-      ast: parseInt(row[17]) || 0,
-      stl: parseInt(row[18]) || 0,
-      blk: parseInt(row[19]) || 0,
-      orb: parseInt(row[20]) || 0,
-      drb: parseInt(row[21]) || 0,
-      fgm: parseInt(row[22]) || 0,
-      fga: parseInt(row[23]) || 0,
-      fgPercent: parseFloat(row[24]) || 0,
-      ftm: parseInt(row[25]) || 0,
-      fta: parseInt(row[26]) || 0,
-      ftPercent: parseFloat(row[27]) || 0,
     }));
 
     // Enrich with photoUrl by looking up Players sheet by player name (column B) → photo in column BB

@@ -69,7 +69,7 @@ export default function WeeklySelectionPage() {
         case "F":
           return playerPos.includes("F");
         case "C":
-          return playerPos === "C";
+          return playerPos === "C" || playerPos === "F/C";
         case "G/F":
           return playerPos.includes("G") || playerPos.includes("F");
         case "F/C":
@@ -134,6 +134,61 @@ export default function WeeklySelectionPage() {
     }
   };
 
+  // Load previously submitted selections
+  const loadPreviousSelections = async (teamId: string, week: number, gamesData?: Game[]) => {
+    try {
+      const selectionsRes = await fetch(`/api/selections?teamId=${encodeURIComponent(teamId)}&week=${week}`);
+      if (selectionsRes.ok) {
+        const selections = await selectionsRes.json();
+        
+        // Map position names to slot IDs
+        const positionToSlotId: Record<string, string> = {
+          'Guard 1': 'guard1',
+          'Guard 2': 'guard2',
+          'Forward 1': 'forward1',
+          'Forward 2': 'forward2',
+          'Centre': 'centre',
+          'Guard/Forward': 'guardForward',
+          'Forward/Centre': 'forwardCentre',
+          'Flex 1': 'flex1',
+          'Flex 2': 'flex2',
+          'Res Guard': 'guardRes',
+          'Res Forward/Center': 'forwardCentreRes',
+          'Res Flex': 'flexRes',
+        };
+
+        // Use provided games data or fall back to state
+        const gamesToSearch = gamesData || games;
+
+        // Build lineup from selections
+        const newLineup: Record<string, LineupSlot> = {};
+        
+        for (const selection of selections) {
+          const slotId = positionToSlotId[selection.position];
+          if (slotId) {
+            // Find the matching game for this selection
+            const matchingGame = gamesToSearch.find(g => 
+              g.nbaTeam === selection.nbaTeam && g.date === selection.gameDate
+            );
+
+            newLineup[slotId] = {
+              id: slotId,
+              name: selection.position,
+              position: STARTER_SLOTS.find(s => s.id === slotId)?.position || RESERVE_SLOTS.find(s => s.id === slotId)?.position || "ANY",
+              playerId: selection.playerId,
+              gameId: matchingGame ? `${matchingGame.nbaTeam}-${matchingGame.date}` : undefined,
+            };
+          }
+        }
+
+        setLineup(newLineup);
+        setSubmittedSelections(selections);
+      }
+    } catch (error) {
+      console.error('Error loading previous selections:', error);
+    }
+  };
+
   const loadData = useCallback(async () => {
     if (!currentTeam) return;
     
@@ -174,10 +229,14 @@ export default function WeeklySelectionPage() {
         
         // Load games for current week
         const gamesRes = await fetch(`/api/schedule?week=${currentWeek || getCurrentWeek(weekDatesData)}`);
+        let gamesData: Game[] = [];
         if (gamesRes.ok) {
-          const gamesData: Game[] = await gamesRes.json();
+          gamesData = await gamesRes.json();
           setGames(gamesData);
         }
+
+        // Load previously submitted selections for the current week
+        await loadPreviousSelections(effectiveTeamId, currentWeek || getCurrentWeek(weekDatesData), gamesData);
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -209,6 +268,9 @@ export default function WeeklySelectionPage() {
         const matchupsData: Matchup[] = await matchupsRes.json();
         setMatchups(matchupsData);
       }
+
+      // Load previously submitted selections for the current week
+      await loadPreviousSelections(teamId, currentWeek);
     } catch (error) {
       console.error('Error loading team data:', error);
     } finally {
@@ -385,10 +447,14 @@ export default function WeeklySelectionPage() {
                     // reload games for chosen week
                     try {
                       const gamesRes = await fetch(`/api/schedule?week=${wk}`);
+                      let gamesData: Game[] = [];
                       if (gamesRes.ok) {
-                        const gamesData: Game[] = await gamesRes.json();
+                        gamesData = await gamesRes.json();
                         setGames(gamesData);
                       }
+                      // Load previous selections for the new week
+                      const effectiveTeamId = viewTeamId || currentTeam?.teamId || '';
+                      await loadPreviousSelections(effectiveTeamId, wk, gamesData);
                     } catch {}
                   }}
                 >
