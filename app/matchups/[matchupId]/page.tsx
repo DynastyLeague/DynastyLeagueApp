@@ -65,6 +65,8 @@ export default function DetailedMatchupPage() {
       'FORWARD 1': ['Forward 1'],
       'FORWARD 2': ['Forward 2'],
       'CENTER': ['Centre', 'Center'],
+      'GUARD/FORWARD': ['Guard/Forward'],
+      'FORWARD/CENTER': ['Forward/Centre', 'Forward/Center'],
       'FLEX 1': ['Flex 1'],
       'FLEX 2': ['Flex 2'],
       'RES GUARD': ['Res Guard'],
@@ -585,6 +587,52 @@ export default function DetailedMatchupPage() {
 
             <PlayerStatsBox 
               selection={getSelectionByPosition(team2Selections, "CENTER")} 
+              isTeam1={false} 
+            />
+          </div>
+
+          {/* Small Blank Space */}
+          <div className="h-3"></div>
+
+          {/* Guard/Forward */}
+          <div className="flex">
+            <PlayerStatsBox 
+              selection={getSelectionByPosition(team1Selections, "GUARD/FORWARD")} 
+              isTeam1={true} 
+                          />
+
+            {/* Column 2: Position Label (Rotated) - Extends full height */}
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-lg font-bold transform -rotate-90 whitespace-nowrap">
+                GUARD/FORWARD
+              </div>
+            </div>
+
+            <PlayerStatsBox 
+              selection={getSelectionByPosition(team2Selections, "GUARD/FORWARD")} 
+              isTeam1={false} 
+            />
+          </div>
+
+          {/* Small Blank Space */}
+          <div className="h-3"></div>
+
+          {/* Forward/Center */}
+          <div className="flex">
+            <PlayerStatsBox 
+              selection={getSelectionByPosition(team1Selections, "FORWARD/CENTER")} 
+              isTeam1={true} 
+                          />
+
+            {/* Column 2: Position Label (Rotated) - Extends full height */}
+            <div className="w-[10%] flex justify-center items-center">
+              <div className="text-gray-400 text-lg font-bold transform -rotate-90 whitespace-nowrap">
+                FORWARD/CENTER
+              </div>
+            </div>
+
+            <PlayerStatsBox 
+              selection={getSelectionByPosition(team2Selections, "FORWARD/CENTER")} 
               isTeam1={false} 
             />
           </div>
