@@ -141,7 +141,7 @@ export default function BottomNav({ }: BottomNavProps) {
                       alt="Dynasty League"
                       className="w-16 h-16 object-contain"
                     />
-                    <span className="nav-item-label">{item.name}</span>
+                    <span className="nav-item-label"></span>
                   </Link>
                 ) : (
                   <Link
