@@ -93,8 +93,8 @@ export default function MatchupPage() {
         }
       `}</style>
       {/* Header */}
-      <div className="bg-orange-500 text-white p-12 pb-16 mb-12">
-        <h1 className="text-6xl sm:text-5xl font-bold text-center">DYNASTY LEAGUE MATCHUPS</h1>
+      <div className="bg-orange-500 text-white p-6 sm:p-12 pb-8 sm:pb-16 mb-6 sm:mb-12">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-center">DYNASTY LEAGUE MATCHUPS</h1>
       </div>
 
       {/* White Spacer */}
@@ -119,14 +119,14 @@ export default function MatchupPage() {
       <div className="h-10 bg-gray-800"></div>
 
       {/* Matchups */}
-      <div className="px-6 pb-12" style={{gap: '10px'}}>
+      <div className="px-4 sm:px-6 pb-12 container-responsive">
         {filteredMatchups.map((matchup) => (
           <Link key={matchup.matchupId} href={`/matchups/${matchup.matchupId}`}>
-            <div className="bg-gray-800 py-6 px-8 sm:py-5 sm:px-7 cursor-pointer hover:bg-gray-700 transition-colors mb-2">
-              <div className="flex items-center justify-between">
+            <div className="bg-gray-800 py-4 px-4 sm:py-6 sm:px-8 cursor-pointer hover:bg-gray-700 transition-colors mb-2 overflow-hidden">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 {/* Team 1 */}
-                <div className="flex items-center space-x-3 sm:space-x-4 flex-1 pr-3 sm:pr-5">
-                  <div className="w-24 h-24 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
                     {(() => {
                       const team1 = getTeamById(matchup.team1Id);
                       if (team1?.teamId) {
@@ -134,9 +134,9 @@ export default function MatchupPage() {
                           <Image
                             src={`/logos/${team1.teamId}-main.png.png`}
                             alt={team1.teamName}
-                            width={96}
-                            height={96}
-                            className="object-contain sm:w-20 sm:h-20"
+                            width={64}
+                            height={64}
+                            className="object-contain w-16 h-16 sm:w-20 sm:h-20"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}
@@ -154,22 +154,22 @@ export default function MatchupPage() {
                 </div>
 
                 {/* Scores */}
-                <div className="text-center px-8 sm:px-12 flex-shrink-0">
-                  <div className="text-white text-5xl sm:text-4xl font-bold leading-loose flex items-center justify-center">
+                <div className="text-center px-2 sm:px-8 flex-shrink-0 min-w-0">
+                  <div className="text-white text-3xl sm:text-4xl font-bold flex items-center justify-center">
                     <span>{matchup.team1Score}</span>
-                    <span className="text-lg mx-8">&nbsp;&nbsp;&nbsp;vs&nbsp;&nbsp;&nbsp;</span>
+                    <span className="text-sm sm:text-lg mx-2 sm:mx-8">vs</span>
                     <span>{matchup.team2Score}</span>
                   </div>
                 </div>
 
                 {/* Team 2 */}
-                <div className="flex items-center space-x-3 sm:space-x-4 flex-1 pl-3 sm:pl-5 justify-end">
+                <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0 justify-end">
                   <div className="min-w-0 flex-1 text-right">
-                    <div className="text-gray-400 text-lg sm:text-base mt-2">
+                    <div className="text-gray-400 text-sm sm:text-base mt-2">
                       {matchup.team2Gp}/9 GP
                     </div>
                   </div>
-                  <div className="w-24 h-24 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
                     {(() => {
                       const team2 = getTeamById(matchup.team2Id);
                       if (team2?.teamId) {
@@ -177,9 +177,9 @@ export default function MatchupPage() {
                           <Image
                             src={`/logos/${team2.teamId}-main.png.png`}
                             alt={team2.teamName}
-                            width={96}
-                            height={96}
-                            className="object-contain sm:w-20 sm:h-20"
+                            width={64}
+                            height={64}
+                            className="object-contain w-16 h-16 sm:w-20 sm:h-20"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}

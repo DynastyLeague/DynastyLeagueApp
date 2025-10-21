@@ -14,12 +14,19 @@ export default function ProfileMenu() {
   return (
     <div className="absolute top-3 right-3">
       <button onClick={toggle} className="w-10 h-10 bg-gray-700 flex items-center justify-center">
-        {currentTeam.mainLogo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={`/api/image?url=${encodeURIComponent(currentTeam.mainLogo)}`} alt="profile" className="w-10 h-10 object-contain" />
-        ) : (
-          <span className="text-white text-xs">{currentTeam.teamName?.slice(0,2).toUpperCase()}</span>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img 
+          src={`/logos/${currentTeam.teamId}-main.png.png`} 
+          alt={`${currentTeam.teamName} logo`} 
+          className="w-10 h-10 object-contain"
+          onError={(e) => {
+            // Fallback to team initials if logo fails to load
+            e.currentTarget.style.display = 'none';
+            const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+            if (fallback) fallback.style.display = 'block';
+          }}
+        />
+        <span className="text-white text-xs hidden">{currentTeam.teamName?.slice(0,2).toUpperCase()}</span>
       </button>
       {open && (
         <div className="mt-2 bg-gray-800 text-white shadow-xl p-2 min-w-[140px]">
