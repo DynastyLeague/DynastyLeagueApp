@@ -134,12 +134,6 @@ export default function WeeklySelectionPage() {
     }
   };
 
-  useEffect(() => {
-    if (currentTeam) {
-      loadData();
-    }
-  }, [currentTeam, loadData]);
-
   const loadData = useCallback(async () => {
     if (!currentTeam) return;
     
@@ -191,6 +185,12 @@ export default function WeeklySelectionPage() {
       setDataLoading(false);
     }
   }, [currentTeam, viewTeamId, currentWeek]);
+
+  useEffect(() => {
+    if (currentTeam) {
+      loadData();
+    }
+  }, [currentTeam, loadData]);
 
   const loadDataForTeam = async (teamId: string) => {
     setDataLoading(true);
