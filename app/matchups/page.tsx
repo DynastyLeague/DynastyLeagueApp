@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Matchup, WeekDate, Team } from '@/lib/types';
+import { Matchup, WeekDate, Team, Selection } from '@/lib/types';
 
 export default function MatchupPage() {
   const [matchups, setMatchups] = useState<Matchup[]>([]);
@@ -11,14 +11,17 @@ export default function MatchupPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [todayDate, setTodayDate] = useState<string>('');
+  const [allSelections, setAllSelections] = useState<Selection[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [matchupsRes, weekDatesRes, teamsRes] = await Promise.all([
+        const [matchupsRes, weekDatesRes, teamsRes, currentTimeRes] = await Promise.all([
           fetch('/api/matchups'),
           fetch('/api/weekdates'),
-          fetch('/api/teams')
+          fetch('/api/teams'),
+          fetch('/api/current-time')
         ]);
 
         if (matchupsRes.ok && weekDatesRes.ok && teamsRes.ok) {
@@ -34,6 +37,12 @@ export default function MatchupPage() {
           if (weekDatesData.length > 0) {
             setSelectedWeek(weekDatesData[0].week);
           }
+
+          // Get today's date
+          if (currentTimeRes.ok) {
+            const { date } = await currentTimeRes.json();
+            setTodayDate(date);
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -44,6 +53,25 @@ export default function MatchupPage() {
 
     fetchData();
   }, []);
+
+  // Fetch selections when week changes
+  useEffect(() => {
+    const fetchSelections = async () => {
+      if (selectedWeek) {
+        try {
+          const selectionsRes = await fetch(`/api/selections?week=${selectedWeek}`);
+          if (selectionsRes.ok) {
+            const selectionsData = await selectionsRes.json();
+            setAllSelections(selectionsData);
+          }
+        } catch (error) {
+          console.error('Error fetching selections:', error);
+        }
+      }
+    };
+
+    fetchSelections();
+  }, [selectedWeek]);
 
   const getTeamById = (teamId: string) => {
     return teams.find(team => team.teamId === teamId);
@@ -65,6 +93,51 @@ export default function MatchupPage() {
     return `${start} - ${end} ${year}`;
   };
 
+  // Get today's games for a specific matchup and team
+  const getTodayGames = (matchupId: string, teamId: string) => {
+    return allSelections.filter(sel => 
+      sel.matchupId === matchupId && 
+      sel.teamId === teamId && 
+      sel.gameDate === todayDate &&
+      !sel.position.toLowerCase().includes('res') // Exclude reserves
+    );
+  };
+
+  // Format stat value
+  const formatStat = (value: number | undefined) => {
+    if (!value || value === 0) return '-';
+    return value.toFixed(1);
+  };
+
+  // Get short team name (second part after first space)
+  const getShortTeamName = (teamId: string) => {
+    const team = getTeamById(teamId);
+    if (!team?.teamName) return teamId.toUpperCase();
+    
+    const teamNameUpper = team.teamName.toUpperCase();
+    
+    // Special mappings for specific teams (case-insensitive)
+    if (teamNameUpper.includes('CHASING') && teamNameUpper.includes('BOARDS')) {
+      return 'BOARDS';
+    }
+    if (teamNameUpper.includes('MONEY') && teamNameUpper.includes('MAGNETS')) {
+      return 'MAGNETS';
+    }
+    if (teamNameUpper === 'NATION' || teamNameUpper.includes('NATION')) {
+      return 'SQUIB';
+    }
+    if (teamNameUpper.includes('FOREVER') && teamNameUpper.includes('WEMBY')) {
+      return 'FOREVERS';
+    }
+    
+    const nameParts = team.teamName.split(' ');
+    if (nameParts.length > 1) {
+      // Return everything after the first word, in uppercase
+      return nameParts.slice(1).join(' ').toUpperCase();
+    }
+    return team.teamName.toUpperCase();
+  };
+
   const filteredMatchups = matchups.filter(matchup => matchup.week === selectedWeek);
 
   if (isLoading) {
@@ -79,10 +152,10 @@ export default function MatchupPage() {
     <div className="min-h-screen bg-gray-800">
       <style jsx>{`
         select {
-          font-size: 1.875rem; /* text-3xl */
+          font-size: 1.5rem; /* text-2xl - 20% smaller than text-3xl */
         }
         select option {
-          font-size: 1.25rem; /* text-xl */
+          font-size: 1rem; /* text-base - 20% smaller than text-xl */
           padding: 0.5rem;
           background-color: #374151; /* bg-gray-700 */
           color: white;
@@ -105,7 +178,7 @@ export default function MatchupPage() {
         <select
           value={selectedWeek}
           onChange={(e) => setSelectedWeek(parseInt(e.target.value))}
-          className="w-full bg-gray-700 text-white text-3xl px-4 py-3 border border-gray-600 rounded-none focus:outline-none focus:border-orange-500 appearance-none"
+          className="w-full bg-gray-700 text-white text-2xl px-4 py-3 border border-gray-600 rounded-none focus:outline-none focus:border-orange-500 appearance-none"
         >
           {weekDates.map((week) => (
             <option key={week.week} value={week.week}>
@@ -122,7 +195,7 @@ export default function MatchupPage() {
       <div className="px-4 sm:px-6 pb-12 container-responsive">
         {filteredMatchups.map((matchup) => (
           <Link key={matchup.matchupId} href={`/matchups/${matchup.matchupId}`}>
-            <div className="bg-gray-800 py-4 px-4 sm:py-6 sm:px-8 cursor-pointer hover:bg-gray-700 transition-colors mb-2 overflow-hidden">
+            <div className="bg-gray-800 py-4 px-4 sm:py-6 sm:px-8 cursor-pointer hover:bg-gray-700 transition-colors mb-12 overflow-hidden">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 {/* Team 1 */}
                 <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
@@ -156,10 +229,14 @@ export default function MatchupPage() {
 
                 {/* Scores */}
                 <div className="text-center px-4 sm:px-12 flex-shrink-0 min-w-0">
-                  <div className="text-white text-2xl sm:text-4xl font-bold flex items-center justify-center gap-3 sm:gap-6">
-                    <span className="min-w-[2rem] sm:min-w-[3rem]">{matchup.team1Score}</span>
+                  <div className="text-2xl sm:text-4xl font-bold flex items-center justify-center gap-3 sm:gap-6">
+                    <span className={`min-w-[2rem] sm:min-w-[3rem] ${matchup.team1Score > matchup.team2Score ? 'text-green-400' : matchup.team1Score < matchup.team2Score ? 'text-red-400' : 'text-gray-400'}`}>
+                      {matchup.team1Score}
+                    </span>
                     <span className="text-sm sm:text-lg text-gray-300">vs</span>
-                    <span className="min-w-[2rem] sm:min-w-[3rem]">{matchup.team2Score}</span>
+                    <span className={`min-w-[2rem] sm:min-w-[3rem] ${matchup.team2Score > matchup.team1Score ? 'text-green-400' : matchup.team2Score < matchup.team1Score ? 'text-red-400' : 'text-gray-400'}`}>
+                      {matchup.team2Score}
+                    </span>
                   </div>
                 </div>
 
@@ -193,6 +270,135 @@ export default function MatchupPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Today's Games Section */}
+              {todayDate && (
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="space-y-3 text-xs">
+                    {/* Team 1 Today's Games */}
+                    <div>
+                      {getTodayGames(matchup.matchupId, matchup.team1Id).length > 0 && (
+                        <>
+                          {/* Header Row */}
+                          <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
+                            <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team1Id)}</span>
+                            <div className="flex flex-1 text-[10px]">
+                              <span className="flex-1 text-center">PTS</span>
+                              <span className="flex-1 text-center">3PM</span>
+                              <span className="flex-1 text-center">AST</span>
+                              <span className="flex-1 text-center">STL</span>
+                              <span className="flex-1 text-center">BLK</span>
+                              <span className="flex-1 text-center">ORB</span>
+                              <span className="flex-1 text-center">DRB</span>
+                              <span className="flex-[1.5] text-center">FG%</span>
+                              <span className="flex-[1.5] text-center">FT%</span>
+                              <span className="flex-1 text-center">MIN</span>
+                            </div>
+                          </div>
+                          {/* Player Rows */}
+                          {getTodayGames(matchup.matchupId, matchup.team1Id).map((player, idx) => {
+                            const nameParts = player.playerName.split(' ');
+                            const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
+                            
+                            // Handle suffixes (Jr, Sr, III, IV, etc.)
+                            const suffixes = ['JR', 'SR', 'II', 'III', 'IV', 'V', 'JR.', 'SR.'];
+                            const lastPart = nameParts[nameParts.length - 1].toUpperCase();
+                            const isSuffix = suffixes.includes(lastPart.replace('.', ''));
+                            
+                            let surname;
+                            if (isSuffix && nameParts.length > 2) {
+                              // If last part is a suffix, get the second-to-last part plus suffix
+                              surname = `${nameParts[nameParts.length - 2].toUpperCase()} ${lastPart}`;
+                            } else {
+                              surname = lastPart;
+                            }
+                            
+                            const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
+                            return (
+                              <div key={idx} className="flex items-center py-1 text-gray-300">
+                                <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
+                                <div className="flex flex-1 text-[10px]">
+                                  <span className="flex-1 text-center">{formatStat(player.pts)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.threePm)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.ast)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.stl)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.blk)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.orb)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.drb)}</span>
+                                  <span className="flex-[1.5] text-center">{formatStat(player.fgPercent)}</span>
+                                  <span className="flex-[1.5] text-center">{formatStat(player.ftPercent)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.min)}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Team 2 Today's Games */}
+                    <div>
+                      {getTodayGames(matchup.matchupId, matchup.team2Id).length > 0 && (
+                        <>
+                          {/* Header Row */}
+                          <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
+                            <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team2Id)}</span>
+                            <div className="flex flex-1 text-[10px]">
+                              <span className="flex-1 text-center">PTS</span>
+                              <span className="flex-1 text-center">3PM</span>
+                              <span className="flex-1 text-center">AST</span>
+                              <span className="flex-1 text-center">STL</span>
+                              <span className="flex-1 text-center">BLK</span>
+                              <span className="flex-1 text-center">ORB</span>
+                              <span className="flex-1 text-center">DRB</span>
+                              <span className="flex-[1.5] text-center">FG%</span>
+                              <span className="flex-[1.5] text-center">FT%</span>
+                              <span className="flex-1 text-center">MIN</span>
+                            </div>
+                          </div>
+                          {/* Player Rows */}
+                          {getTodayGames(matchup.matchupId, matchup.team2Id).map((player, idx) => {
+                            const nameParts = player.playerName.split(' ');
+                            const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
+                            
+                            // Handle suffixes (Jr, Sr, III, IV, etc.)
+                            const suffixes = ['JR', 'SR', 'II', 'III', 'IV', 'V', 'JR.', 'SR.'];
+                            const lastPart = nameParts[nameParts.length - 1].toUpperCase();
+                            const isSuffix = suffixes.includes(lastPart.replace('.', ''));
+                            
+                            let surname;
+                            if (isSuffix && nameParts.length > 2) {
+                              // If last part is a suffix, get the second-to-last part plus suffix
+                              surname = `${nameParts[nameParts.length - 2].toUpperCase()} ${lastPart}`;
+                            } else {
+                              surname = lastPart;
+                            }
+                            
+                            const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
+                            return (
+                              <div key={idx} className="flex items-center py-1 text-gray-300">
+                                <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
+                                <div className="flex flex-1 text-[10px]">
+                                  <span className="flex-1 text-center">{formatStat(player.pts)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.threePm)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.ast)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.stl)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.blk)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.orb)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.drb)}</span>
+                                  <span className="flex-[1.5] text-center">{formatStat(player.fgPercent)}</span>
+                                  <span className="flex-[1.5] text-center">{formatStat(player.ftPercent)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.min)}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </Link>
         ))}

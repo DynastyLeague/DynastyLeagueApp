@@ -73,7 +73,9 @@ export default function WeeklySelectionPage() {
       // Sort weeks by week number to ensure proper order
       const sortedWeeks = [...weekDates].sort((a, b) => a.week - b.week);
       
-      for (const week of sortedWeeks) {
+      for (let i = 0; i < sortedWeeks.length; i++) {
+        const week = sortedWeeks[i];
+        
         // Parse start date in the same way
         let startDate: Date;
         if (week.startDate.includes('/')) {
@@ -90,18 +92,26 @@ export default function WeeklySelectionPage() {
           startDate = new Date(week.startDate);
         }
         
-        console.log(`Week ${week.week} start date:`, startDate, 'Current < Start:', currentDate < startDate);
+        console.log(`Week ${week.week} start date:`, startDate, 'Current >= Start:', currentDate >= startDate);
         
-        // If current date is before this week's start date, this is the upcoming week
-        if (currentDate < startDate) {
-          console.log(`Returning week ${week.week} as upcoming week`);
-          return week.week;
+        // If current date is >= this week's start date, we're in or past this week
+        // So we should show the NEXT week for selections
+        if (currentDate >= startDate) {
+          const nextWeekIndex = i + 1;
+          if (nextWeekIndex < sortedWeeks.length) {
+            console.log(`Current date is in/past week ${week.week}, returning next week ${sortedWeeks[nextWeekIndex].week}`);
+            return sortedWeeks[nextWeekIndex].week;
+          } else {
+            // We're in the last week, so return the last week
+            console.log(`In last week ${week.week}, returning it`);
+            return week.week;
+          }
         }
       }
       
-      // If we're past all week start dates, return the last week
-      console.log('Past all weeks, returning last week:', sortedWeeks[sortedWeeks.length - 1]?.week || 1);
-      return sortedWeeks[sortedWeeks.length - 1]?.week || 1;
+      // If we haven't started any weeks yet, return the first week
+      console.log('Before all weeks, returning first week:', sortedWeeks[0]?.week || 1);
+      return sortedWeeks[0]?.week || 1;
     } catch (error) {
       console.error('Error calculating current week:', error);
       return 1;
