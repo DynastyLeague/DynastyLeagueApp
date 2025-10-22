@@ -405,7 +405,7 @@ export default function MatchupPage() {
       </div>
 
       {/* Bottom padding for navigation */}
-      <div className="pb-20"></div>
+      <div className="h-40"></div>
     </div>
   );
 }
