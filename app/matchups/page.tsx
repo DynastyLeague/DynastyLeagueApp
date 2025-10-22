@@ -106,7 +106,8 @@ export default function MatchupPage() {
   // Format stat value
   const formatStat = (value: number | undefined) => {
     if (!value || value === 0) return '-';
-    return value.toFixed(1);
+    // Remove .0 for whole numbers
+    return value % 1 === 0 ? value.toString() : value.toFixed(1);
   };
 
   // Get short team name (second part after first space)
