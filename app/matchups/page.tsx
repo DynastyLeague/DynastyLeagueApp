@@ -103,8 +103,18 @@ export default function MatchupPage() {
     );
   };
 
-  // Format stat value
-  const formatStat = (value: number | undefined) => {
+  // Format stat value (for non-percentage stats)
+  const formatStat = (value: number | undefined, hasStarted: boolean = false) => {
+    if (!value || value === 0) {
+      // If game has started (MIN >= 1), show 0 instead of -
+      return hasStarted ? '0' : '-';
+    }
+    // Remove .0 for whole numbers
+    return value % 1 === 0 ? value.toString() : value.toFixed(1);
+  };
+
+  // Format percentage stat (keep - if no data, even if game started)
+  const formatPercentStat = (value: number | undefined) => {
     if (!value || value === 0) return '-';
     // Remove .0 for whole numbers
     return value % 1 === 0 ? value.toString() : value.toFixed(1);
@@ -315,20 +325,22 @@ export default function MatchupPage() {
                             }
                             
                             const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
+                            const hasStarted = (player.min || 0) >= 1;
+                            
                             return (
                               <div key={idx} className="flex items-center py-1 text-gray-300">
                                 <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
                                 <div className="flex flex-1 text-[10px]">
-                                  <span className="flex-1 text-center">{formatStat(player.pts)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.threePm)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.ast)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.stl)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.blk)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.orb)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.drb)}</span>
-                                  <span className="flex-[1.5] text-center">{formatStat(player.fgPercent)}</span>
-                                  <span className="flex-[1.5] text-center">{formatStat(player.ftPercent)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.min)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.pts, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.threePm, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.ast, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.stl, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.blk, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.orb, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.drb, hasStarted)}</span>
+                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.fgPercent)}</span>
+                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.ftPercent)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.min, hasStarted)}</span>
                                 </div>
                               </div>
                             );
@@ -376,20 +388,22 @@ export default function MatchupPage() {
                             }
                             
                             const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
+                            const hasStarted = (player.min || 0) >= 1;
+                            
                             return (
                               <div key={idx} className="flex items-center py-1 text-gray-300">
                                 <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
                                 <div className="flex flex-1 text-[10px]">
-                                  <span className="flex-1 text-center">{formatStat(player.pts)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.threePm)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.ast)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.stl)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.blk)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.orb)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.drb)}</span>
-                                  <span className="flex-[1.5] text-center">{formatStat(player.fgPercent)}</span>
-                                  <span className="flex-[1.5] text-center">{formatStat(player.ftPercent)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.min)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.pts, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.threePm, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.ast, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.stl, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.blk, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.orb, hasStarted)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.drb, hasStarted)}</span>
+                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.fgPercent)}</span>
+                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.ftPercent)}</span>
+                                  <span className="flex-1 text-center">{formatStat(player.min, hasStarted)}</span>
                                 </div>
                               </div>
                             );
