@@ -13,11 +13,11 @@ export async function GET(request: NextRequest) {
     const sheets = await getSheetsClient();
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
 
-    // Fetch all selections data from Selections tab
+    // Fetch all selections data from PlayerGameStats tab
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      // Columns: week, matchup_id, team_id, team_name, opp_team_name, positions, player_id, player_name, nba_team, game_date, selected_game, submitted_date_time
-      range: 'Selections!A:L',
+      // Headers: week matchup_id team_id team_name opp_team_name positions player_id player_name nba_team game_date nba_opposition submitted_date_time date_code TIME MIN PTS 3PM AST STL BLK ORB DRB FGM FGA FG% FTM FTA FT%
+      range: 'PlayerGameStats!A:AB',
     });
 
     const rows = response.data.values || [];
@@ -38,8 +38,7 @@ export async function GET(request: NextRequest) {
       filteredRows = filteredRows.filter(row => row[1] === matchupId);
     }
 
-    // Map to selection objects (schema aligns with Selections tab headers)
-    // Headers: week matchup_id team_id team_name opp_team_name positions player_id player_name nba_team game_date nba_opposition submitted_date_time
+    // Map to selection objects (schema aligns with PlayerGameStats tab headers)
     const baseSelections = filteredRows.map(row => ({
       week: parseInt(row[0]) || 0,          // A: week
       matchupId: row[1] || '',               // B: matchup_id
@@ -53,6 +52,22 @@ export async function GET(request: NextRequest) {
       gameDate: row[9] || '',                // J: game_date
       nbaOpposition: row[10] || '',          // K: nba_opposition
       submittedDateTime: row[11] || '',      // L: submitted_date_time
+      dateCode: row[12] || '',               // M: date_code
+      time: row[13] || '',                   // N: TIME
+      min: parseFloat(row[14]) || 0,         // O: MIN
+      pts: parseFloat(row[15]) || 0,         // P: PTS
+      threePm: parseFloat(row[16]) || 0,     // Q: 3PM
+      ast: parseFloat(row[17]) || 0,         // R: AST
+      stl: parseFloat(row[18]) || 0,         // S: STL
+      blk: parseFloat(row[19]) || 0,         // T: BLK
+      orb: parseFloat(row[20]) || 0,         // U: ORB
+      drb: parseFloat(row[21]) || 0,         // V: DRB
+      fgm: parseFloat(row[22]) || 0,         // W: FGM
+      fga: parseFloat(row[23]) || 0,         // X: FGA
+      fgPercent: parseFloat(row[24]) || 0,   // Y: FG%
+      ftm: parseFloat(row[25]) || 0,         // Z: FTM
+      fta: parseFloat(row[26]) || 0,         // AA: FTA
+      ftPercent: parseFloat(row[27]) || 0,   // AB: FT%
       selectedGame: row[10] || '',           // Kept for backwards compatibility, same as nbaOpposition
     }));
 
