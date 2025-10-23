@@ -149,8 +149,25 @@ export default function DetailedMatchupPage() {
     if (!hasPlayed) return '-';
     const numeric = Number(value);
     if (Number.isNaN(numeric)) return '-';
-    const asPercent = numeric <= 1 ? numeric * 100 : numeric;
-    return asPercent.toFixed(1);
+    
+    // Convert to decimal format (0.000 to 1.000)
+    const asDecimal = numeric > 1 ? numeric / 100 : numeric;
+    
+    // Format with 3 decimal places
+    const formatted = asDecimal.toFixed(3);
+    
+    // If it's 1.000, return as is
+    if (formatted === '1.000') return '1.000';
+    
+    // If it's 0.000, return as is
+    if (formatted === '0.000') return '0.000';
+    
+    // If less than 1, remove the leading 0 (e.g., 0.456 becomes .456)
+    if (asDecimal < 1 && asDecimal > 0) {
+      return formatted.substring(1); // Remove the '0' to show '.xxx'
+    }
+    
+    return formatted;
   };
 
   const PlayerStatsBox = ({ 
