@@ -148,7 +148,7 @@ export default function DetailedMatchupPage() {
     if (value === undefined || value === null) return '-';
     if (!hasPlayed) return '-';
     const numeric = Number(value);
-    if (Number.isNaN(numeric)) return '-';
+    if (Number.isNaN(numeric) || numeric === 0) return '-';
     
     // Convert to decimal format (0.000 to 1.000)
     const asDecimal = numeric > 1 ? numeric / 100 : numeric;
@@ -156,18 +156,14 @@ export default function DetailedMatchupPage() {
     // Format with 3 decimal places
     const formatted = asDecimal.toFixed(3);
     
-    // If it's 1.000, return as is
-    if (formatted === '1.000') return '1.000';
+    // If it's exactly 1, return as 1.000
+    if (asDecimal >= 0.9995) return '1.000'; // Handle floating point rounding
     
-    // If it's 0.000, return as is
-    if (formatted === '0.000') return '0.000';
+    // If it's effectively 0, return 0.000
+    if (asDecimal < 0.0005) return '0.000';
     
     // If less than 1, remove the leading 0 (e.g., 0.456 becomes .456)
-    if (asDecimal < 1 && asDecimal > 0) {
-      return formatted.substring(1); // Remove the '0' to show '.xxx'
-    }
-    
-    return formatted;
+    return formatted.substring(1); // Remove the '0' to show '.xxx'
   };
 
   const PlayerStatsBox = ({ 
