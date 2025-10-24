@@ -30,7 +30,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
     setShowHistoryModal(false);
   };
 
-  const getSalaryDisplay = (salary: any, option?: string) => {
+  const getSalaryDisplay = (salary: number | string | undefined, option?: string) => {
     // Check if the option column indicates a contract status
     if (option) {
       if (option.includes('TO')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-green-400 bg-green-900/20' };
