@@ -8,7 +8,7 @@ export async function GET() {
     const sheets = await getSheetsClient();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEETS_ID as string,
-      range: 'Matchups!A:AI',
+      range: 'Matchups!A:AJ',
     });
 
     const rows = response.data.values;
