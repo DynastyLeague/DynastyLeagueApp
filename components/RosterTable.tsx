@@ -69,14 +69,13 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
             <thead className="bg-gray-700 sticky top-0 z-20">
               <tr>
                 <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600 w-[182px] z-30">
-                  Player
                 </th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">25-26</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">26-27</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">27-28</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">28-29</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">29-30</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">30-31</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">25-26</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">26-27</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">27-28</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">28-29</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">29-30</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">30-31</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-600">

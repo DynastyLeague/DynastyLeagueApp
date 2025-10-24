@@ -76,6 +76,69 @@ export default function RosterPage() {
     setSelectedTeam(team || null);
   };
 
+  // Calculate salary cap allocations
+  const calculateCapAllocations = (year: string) => {
+    let total = 0;
+    
+    // Active players: 100% of salary
+    active.forEach(player => {
+      const salary = getSalaryForYear(player, year);
+      if (typeof salary === 'number') {
+        total += salary;
+      }
+    });
+    
+    // Injury players: 50% of salary
+    inj.forEach(player => {
+      const salary = getSalaryForYear(player, year);
+      if (typeof salary === 'number') {
+        total += salary * 0.5;
+      }
+    });
+    
+    // Development players: 0% of salary (no calculation needed)
+    
+    return total;
+  };
+
+  // Get salary for specific year
+  const getSalaryForYear = (player: Player, year: string) => {
+    switch (year) {
+      case '25-26': return typeof player.salary25_26 === 'number' ? player.salary25_26 : 0;
+      case '26-27': return typeof player.salary26_27 === 'number' ? player.salary26_27 : 0;
+      case '27-28': return typeof player.salary27_28 === 'number' ? player.salary27_28 : 0;
+      case '28-29': return typeof player.salary28_29 === 'number' ? player.salary28_29 : 0;
+      case '29-30': return typeof player.salary29_30 === 'number' ? player.salary29_30 : 0;
+      case '30-31': return typeof player.salary30_31 === 'number' ? player.salary30_31 : 0;
+      default: return 0;
+    }
+  };
+
+  // Calculate cap space
+  const calculateCapSpace = (year: string) => {
+    const salaryCap = year === '25-26' ? 247.2 : 276.87;
+    const allocations = calculateCapAllocations(year);
+    return salaryCap - allocations;
+  };
+
+  // Calculate hard cap limit
+  const calculateHardCapLimit = (year: string) => {
+    const hardCap = year === '25-26' ? 296.8 : 332.25;
+    const minSalary = year === '25-26' ? 2.48 : 2.77;
+    const activeRosterCount = active.length;
+    const minRosterSpots = 16;
+    
+    // Calculate (min salary × (16 - active roster))
+    const minSalaryAdjustment = minSalary * (minRosterSpots - activeRosterCount);
+    
+    // If negative, don't calculate (return hard cap as is)
+    if (minSalaryAdjustment < 0) {
+      return hardCap;
+    }
+    
+    return hardCap - minSalaryAdjustment;
+  };
+
   if (loading && !selectedTeam) {
     return (
       <div className="min-h-screen bg-gray-800 flex items-center justify-center">
@@ -94,21 +157,19 @@ export default function RosterPage() {
         {selectedTeam && (
           <div className="flex items-center gap-4">
             {/* Team Logo */}
-            {selectedTeam.mainLogo ? (
-              <img
-                src={`/api/image?url=${encodeURIComponent(selectedTeam.mainLogo)}`}
-                alt={`${selectedTeam.teamName} logo`}
-                className="h-16 w-16 object-contain"
-                onError={(e) => {
-                  console.log('Logo failed to load:', selectedTeam.mainLogo);
-                  e.currentTarget.style.display = 'none';
-                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-            ) : null}
+            <img
+              src={`/logos/${selectedTeam.teamId}-main.png.png`}
+              alt={`${selectedTeam.teamName} logo`}
+              className="h-16 w-16 object-contain"
+              onError={(e) => {
+                console.log('Logo failed to load:', selectedTeam.teamId);
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
             <div 
-              className={`h-16 w-16 bg-gray-600 flex items-center justify-center rounded ${selectedTeam.mainLogo ? 'hidden' : ''}`}
+              className="h-16 w-16 bg-gray-600 flex items-center justify-center rounded hidden"
             >
               <span className="text-white text-sm font-bold">
                 {selectedTeam.teamName?.slice(0, 2).toUpperCase()}
@@ -155,14 +216,14 @@ export default function RosterPage() {
             onChange={(e) => setSelectedSection(e.target.value)}
             className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
           >
-            <option value="home" className="bg-gray-700 text-white">Home</option>
-            <option value="rosters" className="bg-gray-700 text-white">Rosters</option>
-            <option value="depth-chart" className="bg-gray-700 text-white">Depth Chart</option>
-            <option value="draft-picks" className="bg-gray-700 text-white">Future Draft Picks</option>
-            <option value="season-history" className="bg-gray-700 text-white">Season by Season History</option>
-            <option value="player-stats" className="bg-gray-700 text-white">All-time Player Stats</option>
-            <option value="player-records" className="bg-gray-700 text-white">Player Records</option>
-            <option value="team-records" className="bg-gray-700 text-white">Team Records</option>
+            <option value="home" className="bg-gray-700 text-white">HOME</option>
+            <option value="rosters" className="bg-gray-700 text-white">ROSTER</option>
+            <option value="depth-chart" className="bg-gray-700 text-white">DEPTH CHART</option>
+            <option value="draft-picks" className="bg-gray-700 text-white">FUTURE DRAFT PICKS</option>
+            <option value="season-history" className="bg-gray-700 text-white">SEASON BY SEASON HISTORY</option>
+            <option value="player-stats" className="bg-gray-700 text-white">ALL-TIME PLAYER STATS</option>
+            <option value="player-records" className="bg-gray-700 text-white">PLAYER RECORDS</option>
+            <option value="team-records" className="bg-gray-700 text-white">TEAM RECORDS</option>
           </select>
           {/* Custom dropdown arrow */}
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -199,49 +260,66 @@ export default function RosterPage() {
 
           {selectedSection === "rosters" && (
             <>
-              {/* Draft Picks Section */}
-              {draftPicks && (
-                <section className="px-6 mb-8">
-                  <h2 className="text-2xl font-bold mb-4 text-white">DRAFT PICKS</h2>
-                  <div className="bg-gray-700 rounded-lg p-4">
-                    <table className="w-full">
-                      <tbody>
-                        <tr className="border-b border-gray-600">
-                          <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">2026</td>
-                          <td className="px-1 py-4 text-sm text-white text-center">{draftPicks?.picks2026 || '—'}</td>
-                        </tr>
-                        <tr className="border-b border-gray-600">
-                          <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">2027</td>
-                          <td className="px-1 py-4 text-sm text-white text-center">{draftPicks?.picks2027 || '—'}</td>
-                        </tr>
-                        <tr className="border-b border-gray-600">
-                          <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">2028</td>
-                          <td className="px-1 py-4 text-sm text-white text-center">{draftPicks?.picks2028 || '—'}</td>
-                        </tr>
-                        <tr className="border-b border-gray-600">
-                          <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">2029</td>
-                          <td className="px-1 py-4 text-sm text-white text-center">{draftPicks?.picks2029 || '—'}</td>
-                        </tr>
-                        <tr className="border-b border-gray-600">
-                          <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">2030</td>
-                          <td className="px-1 py-4 text-sm text-white text-center">{draftPicks?.picks2030 || '—'}</td>
-                        </tr>
-                        <tr className="border-b border-gray-600">
-                          <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">NOTES</td>
-                          <td className="px-1 py-4 text-sm text-white text-center whitespace-pre-line">{draftPicks?.notes || '—'}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              )}
+              {/* Salary Cap Breakdown */}
+              <section className="px-6 mb-8">
+                <h2 className="text-2xl font-bold mb-4 text-white">SALARY CAP BREAKDOWN</h2>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">YEAR</th>
+                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">25-26</th>
+                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">26-27</th>
+                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">27-28</th>
+                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">28-29</th>
+                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">29-30</th>
+                        <th className="px-1 py-4 text-sm text-white text-center font-semibold">30-31</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-gray-600">
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">TOTAL CAP ALLOCATIONS</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('25-26').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('26-27').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('27-28').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('28-29').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('29-30').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center">${calculateCapAllocations('30-31').toFixed(2)}m</td>
+                      </tr>
+                      <tr className="border-b border-gray-600">
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">CAP SPACE</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('25-26').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('26-27').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('27-28').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('28-29').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('29-30').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center">${calculateCapSpace('30-31').toFixed(2)}m</td>
+                      </tr>
+                      <tr className="border-b border-gray-600">
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">HARD CAP LIMIT</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('25-26').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('26-27').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('27-28').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('28-29').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('29-30').toFixed(2)}m</td>
+                        <td className="px-1 py-4 text-sm text-white text-center">${calculateHardCapLimit('30-31').toFixed(2)}m</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
 
               {/* Roster Tables */}
               <section className="px-6 mb-6">
-                <h2 className="text-2xl font-bold mb-3 text-white">ROSTER</h2>
+                <div className="flex gap-8 mb-4">
+                  <h2 className="text-lg font-semibold text-white">MAIN ({active.length}/20)</h2>
+                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT ({dev.length}/6)</h2>
+                  <h2 className="text-lg font-semibold text-white">INJURY ({inj.length}/2)</h2>
+                </div>
+                
                 <RosterTable 
                   players={active} 
-                  title="MAIN ROSTER" 
+                  title="" 
                   maxSlots={20} 
                 />
               </section>
@@ -249,7 +327,7 @@ export default function RosterPage() {
               <section className="px-6 mb-6">
                 <RosterTable 
                   players={dev} 
-                  title="Development" 
+                  title="" 
                   maxSlots={6} 
                 />
               </section>
@@ -257,37 +335,13 @@ export default function RosterPage() {
               <section className="px-6 mb-6">
                 <RosterTable 
                   players={inj} 
-                  title="Injury Reserve" 
+                  title="" 
                   maxSlots={2} 
                 />
               </section>
 
-              {/* Salary Cap Section */}
-              <section className="px-6 pb-32">
-                <h2 className="text-lg font-semibold mb-3 text-white">
-                  SALARY CAP BREAKDOWN
-                </h2>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="text-center">
-                      <div className="text-gray-300">Total Salary</div>
-                      <div className="font-semibold text-white">$0M</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-gray-300">Cap Space</div>
-                      <div className="font-semibold text-white">$0M</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-gray-300">Luxury Tax</div>
-                      <div className="font-semibold text-white">$0M</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-gray-300">Hard Cap</div>
-                      <div className="font-semibold text-white">$0M</div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+              {/* Bottom spacing */}
+              <div className="h-32"></div>
             </>
           )}
 
