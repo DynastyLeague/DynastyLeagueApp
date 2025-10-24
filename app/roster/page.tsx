@@ -14,7 +14,6 @@ export default function RosterPage() {
   const [active, setActive] = useState<Player[]>([]);
   const [dev, setDev] = useState<Player[]>([]);
   const [inj, setInj] = useState<Player[]>([]);
-  const [draftPicks, setDraftPicks] = useState<Record<string, string> | null>(null);
   const [draftCapital, setDraftCapital] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState<string>("home");
@@ -64,7 +63,6 @@ export default function RosterPage() {
         const draftRes = await fetch(`/api/draft-picks?teamId=${selectedTeamId}`);
         if (draftRes.ok) {
           const draftData = await draftRes.json();
-          setDraftPicks(draftData);
           setDraftCapital(draftData);
         }
       } catch (error) {
@@ -163,7 +161,8 @@ export default function RosterPage() {
 
   // Get players by position for depth chart
   const getPlayersByPosition = (position: string) => {
-    return players.filter(player => {
+    const allPlayers = [...active, ...dev, ...inj];
+    return allPlayers.filter(player => {
       const playerPos = player.position.toUpperCase();
       switch (position) {
         case "G":
@@ -427,7 +426,7 @@ export default function RosterPage() {
                       </h3>
                       <div className="space-y-2">
                         {positionPlayers.length > 0 ? (
-                          positionPlayers.map((player, index) => (
+                          positionPlayers.map((player) => (
                             <div key={player.playerId} className="text-gray-300 text-sm">
                               {player.name} ({player.nbaTeam}) - Ranked #{player.twoYearRank || "-"}
                             </div>
