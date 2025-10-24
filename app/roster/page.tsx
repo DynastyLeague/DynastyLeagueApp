@@ -411,9 +411,7 @@ export default function RosterPage() {
                       Week {upcomingMatchup.week} vs {upcomingMatchup.team1Id === selectedTeamId ? upcomingMatchup.team2Name : upcomingMatchup.team1Name}
                     </div>
                     <div className="text-sm">
-                      ({upcomingMatchup.team1Id === selectedTeamId ? 
-                        `${upcomingMatchup.team2Conference || 'TBD'} | Position: ${upcomingMatchup.team2Standing || 'TBD'} | Record: ${upcomingMatchup.team2Record || 'TBD'}` : 
-                        `${upcomingMatchup.team1Conference || 'TBD'} | Position: ${upcomingMatchup.team1Standing || 'TBD'} | Record: ${upcomingMatchup.team1Record || 'TBD'}`})
+                      (Coming Soon)
                     </div>
                   </div>
                 ) : (
@@ -424,31 +422,10 @@ export default function RosterPage() {
               {/* Season Record & Standing */}
               <div className="bg-gray-700 p-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Season Record & Standing</h3>
-                {currentMatchup ? (
-                  <div className="text-gray-300 space-y-1">
-                    <div className="text-sm">
-                      Conference: {currentMatchup.team1Id === selectedTeamId ? 
-                        currentMatchup.team1Conference || 'TBD' : 
-                        currentMatchup.team2Conference || 'TBD'}
-                    </div>
-                    <div className="text-sm">
-                      Position: {currentMatchup.team1Id === selectedTeamId ? 
-                        currentMatchup.team1Standing || 'TBD' : 
-                        currentMatchup.team2Standing || 'TBD'}
-                    </div>
-                    <div className="text-sm">
-                      Record: {currentMatchup.team1Id === selectedTeamId ? 
-                        currentMatchup.team1Record || 'TBD' : 
-                        currentMatchup.team2Record || 'TBD'}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-gray-300 space-y-1">
-                    <div className="text-sm">Conference: TBD</div>
-                    <div className="text-sm">Position: TBD</div>
-                    <div className="text-sm">Record: TBD</div>
-                  </div>
-                )}
+                <div className="text-gray-300 space-y-1">
+                  <div className="text-sm">Position: TBD</div>
+                  <div className="text-sm">Record: TBD</div>
+                </div>
               </div>
             </div>
           )}
