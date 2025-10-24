@@ -128,15 +128,29 @@ export default function RosterPage() {
     const activeRosterCount = active.length;
     const minRosterSpots = 16;
     
-    // Calculate (min salary × (16 - active roster))
-    const minSalaryAdjustment = minSalary * (minRosterSpots - activeRosterCount);
+    // Start with Hard Cap - Total Cap Allocations
+    const allocations = calculateCapAllocations(year);
+    let result = hardCap - allocations;
     
-    // If negative, don't calculate (return hard cap as is)
-    if (minSalaryAdjustment < 0) {
-      return hardCap;
+    // Factor in min salary for spots under 16
+    if (activeRosterCount < minRosterSpots) {
+      const missingSpots = minRosterSpots - activeRosterCount;
+      const minSalaryAdjustment = minSalary * missingSpots;
+      result -= minSalaryAdjustment;
     }
     
-    return hardCap - minSalaryAdjustment;
+    return result;
+  };
+
+  // Format currency with red highlighting for negative numbers
+  const formatCurrency = (value: number) => {
+    const formatted = `$${value.toFixed(2)}m`;
+    const isNegative = value < 0;
+    return (
+      <span className={isNegative ? 'text-red-400' : 'text-white'}>
+        {formatted}
+      </span>
+    );
   };
 
   if (loading && !selectedTeam) {
@@ -261,51 +275,55 @@ export default function RosterPage() {
           {selectedSection === "rosters" && (
             <>
               {/* Salary Cap Breakdown */}
-              <section className="px-6 mb-8">
+              <section className="px-6 mb-2">
                 <h2 className="text-2xl font-bold mb-4 text-white">SALARY CAP BREAKDOWN</h2>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <table className="w-full">
-                    <thead>
-                      <tr>
-                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">YEAR</th>
-                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">25-26</th>
-                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">26-27</th>
-                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">27-28</th>
-                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">28-29</th>
-                        <th className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">29-30</th>
-                        <th className="px-1 py-4 text-sm text-white text-center font-semibold">30-31</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-gray-600">
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">TOTAL CAP ALLOCATIONS</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('25-26').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('26-27').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('27-28').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('28-29').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapAllocations('29-30').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center">${calculateCapAllocations('30-31').toFixed(2)}m</td>
-                      </tr>
-                      <tr className="border-b border-gray-600">
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">CAP SPACE</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('25-26').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('26-27').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('27-28').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('28-29').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateCapSpace('29-30').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center">${calculateCapSpace('30-31').toFixed(2)}m</td>
-                      </tr>
-                      <tr className="border-b border-gray-600">
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600 font-semibold">HARD CAP LIMIT</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('25-26').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('26-27').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('27-28').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('28-29').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center border-r border-gray-600">${calculateHardCapLimit('29-30').toFixed(2)}m</td>
-                        <td className="px-1 py-4 text-sm text-white text-center">${calculateHardCapLimit('30-31').toFixed(2)}m</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div className="bg-gray-800 rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full table-fixed">
+                      <thead className="bg-gray-700 sticky top-0 z-20">
+                        <tr>
+                          <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600 w-[182px] z-30">
+                            YEAR
+                          </th>
+                          <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">25-26</th>
+                          <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">26-27</th>
+                          <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">27-28</th>
+                          <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">28-29</th>
+                          <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">29-30</th>
+                          <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">30-31</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-600">
+                        <tr className="bg-gray-800">
+                          <td className="sticky left-0 bg-inherit px-4 py-2 text-sm border-r border-gray-600 w-[182px] z-10 text-white font-semibold">TOTAL CAP ALLOCATIONS</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('25-26'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('26-27'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('27-28'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('28-29'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('29-30'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('30-31'))}</td>
+                        </tr>
+                        <tr className="bg-gray-700">
+                          <td className="sticky left-0 bg-inherit px-4 py-2 text-sm border-r border-gray-600 w-[182px] z-10 text-white font-semibold">CAP SPACE</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('25-26'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('26-27'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('27-28'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('28-29'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('29-30'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('30-31'))}</td>
+                        </tr>
+                        <tr className="bg-gray-800">
+                          <td className="sticky left-0 bg-inherit px-4 py-2 text-sm border-r border-gray-600 w-[182px] z-10 text-white font-semibold">HARD CAP LIMIT</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('25-26'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('26-27'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('27-28'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('28-29'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('29-30'))}</td>
+                          <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('30-31'))}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </section>
 

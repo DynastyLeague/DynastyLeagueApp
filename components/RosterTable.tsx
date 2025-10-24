@@ -70,12 +70,12 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
               <tr>
                 <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600 w-[182px] z-30">
                 </th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">25-26</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">26-27</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">27-28</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">28-29</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">29-30</th>
-                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24 relative z-10">30-31</th>
+                <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">25-26</th>
+                <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">26-27</th>
+                <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">27-28</th>
+                <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">28-29</th>
+                <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">29-30</th>
+                <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">30-31</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-600">
@@ -186,23 +186,27 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
         </div>
       </div>
 
-      {/* History Log Modal */}
+      {/* History Log Popup */}
       {showHistoryModal && selectedPlayer && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-gray-800 rounded-lg p-4 max-w-lg max-h-[60vh] overflow-y-auto mx-4">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-bold text-white">
-                History Log - {selectedPlayer.name}
-              </h3>
-              <button
-                onClick={closeHistoryModal}
-                className="text-gray-400 hover:text-white text-xl"
-              >
-                ×
-              </button>
-            </div>
-            <div className="text-gray-300 whitespace-pre-wrap text-sm">
-              {selectedPlayer.playerHistoryLog || 'No history log available for this player.'}
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+            <div className="bg-gray-800 border-2 border-gray-600 rounded-lg shadow-2xl w-80 max-h-96 overflow-hidden">
+              <div className="flex justify-between items-center p-3 bg-gray-700 border-b border-gray-600">
+                <h3 className="text-sm font-bold text-white">
+                  History Log - {selectedPlayer.name}
+                </h3>
+                <button
+                  onClick={closeHistoryModal}
+                  className="text-gray-400 hover:text-white text-lg font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-3 max-h-80 overflow-y-auto">
+                <div className="text-gray-300 whitespace-pre-wrap text-xs leading-relaxed">
+                  {selectedPlayer.playerHistoryLog || 'No history log available for this player.'}
+                </div>
+              </div>
             </div>
           </div>
         </div>
