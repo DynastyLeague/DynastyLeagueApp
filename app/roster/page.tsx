@@ -19,7 +19,6 @@ export default function RosterPage() {
   const [selectedSection, setSelectedSection] = useState<string>("home");
   const [currentMatchup, setCurrentMatchup] = useState<Matchup | null>(null);
   const [upcomingMatchup, setUpcomingMatchup] = useState<Matchup | null>(null);
-  const [weekDates, setWeekDates] = useState<WeekDate[]>([]);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
 
   // Load teams on mount and set current team as default
@@ -61,7 +60,7 @@ export default function RosterPage() {
       
       for (const weekDate of weekDates) {
         const weekStart = new Date(weekDate.startDate);
-        const weekEnd = new Date(weekDate.endDate);
+        const weekEnd = new Date(weekDate.finishDate);
         
         if (currentDate >= weekStart && currentDate <= weekEnd) {
           return weekDate.week;
@@ -106,7 +105,6 @@ export default function RosterPage() {
 
         if (weekDatesRes.ok) {
           const weekDatesData: WeekDate[] = await weekDatesRes.json();
-          setWeekDates(weekDatesData);
           
           const calculatedWeek = await getCurrentWeek(weekDatesData);
           setCurrentWeek(calculatedWeek);
