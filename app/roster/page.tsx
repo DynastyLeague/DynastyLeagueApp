@@ -391,16 +391,17 @@ export default function RosterPage() {
 
           {/* Roster Tables */}
           <section className="px-6 mb-6">
-                <div className="flex gap-8 mb-4">
-                  <h2 className="text-lg font-semibold text-white">MAIN (/20)</h2>
-                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT (/6)</h2>
-                  <h2 className="text-lg font-semibold text-white">INJURY (/2)</h2>
+                <div className="space-y-4 mb-4">
+                  <h2 className="text-lg font-semibold text-white">MAIN ROSTER (/20) - {active.length} Active status players</h2>
+                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT (/6) - {dev.length} Development status players</h2>
+                  <h2 className="text-lg font-semibold text-white">INJURY RESERVE (/2) - {inj.length} Injury status players</h2>
                 </div>
                 
             <RosterTable 
               players={active} 
                   title="" 
-              maxSlots={20} 
+              maxSlots={20}
+              headerTitle="MAIN ROSTER"
             />
           </section>
           
@@ -408,7 +409,8 @@ export default function RosterPage() {
             <RosterTable 
               players={dev} 
                   title="" 
-              maxSlots={6} 
+              maxSlots={6}
+              headerTitle="DEVELOPMENT LIST"
             />
           </section>
           
@@ -416,7 +418,8 @@ export default function RosterPage() {
             <RosterTable 
               players={inj} 
                   title="" 
-              maxSlots={2} 
+              maxSlots={2}
+              headerTitle="LONG TERM INJURY"
             />
           </section>
 
@@ -428,31 +431,37 @@ export default function RosterPage() {
           {selectedSection === "depth-chart" && (
             <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">DEPTH CHART</h2>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {[
                   { key: "G", title: "Guard" },
                   { key: "G/F", title: "Guard/Forward" },
                   { key: "F", title: "Forward" },
                   { key: "F/C", title: "Forward/Center" },
                   { key: "C", title: "Center" }
-                ].map(({ key, title }) => {
+                ].map(({ key, title }, index) => {
                   const positionPlayers = getPlayersByPosition(key);
                   return (
-                    <div key={key} className="bg-gray-700 p-4">
-                      <h3 className="text-lg font-semibold mb-3 text-white">
-                        {title} ({positionPlayers.length})
-                      </h3>
-                      <div className="space-y-2">
-                        {positionPlayers.length > 0 ? (
-                          positionPlayers.map((player) => (
-                            <div key={player.playerId} className="text-gray-300 text-sm">
-                              {player.name} ({player.nbaTeam}) - Ranked #{player.twoYearRank || "-"}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-gray-500 text-sm italic">No players at this position</div>
-                        )}
+                    <div key={key}>
+                      <div className="bg-gray-700 p-4">
+                        <h3 className="text-lg font-semibold mb-3 text-white">
+                          {title} ({positionPlayers.length})
+                        </h3>
+                        <div className="space-y-2">
+                          {positionPlayers.length > 0 ? (
+                            positionPlayers.map((player) => (
+                              <div key={player.playerId} className="text-gray-300 text-sm">
+                                {player.name} ({player.nbaTeam}) - Ranked #{player.twoYearRank || "-"}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-gray-500 text-sm italic">No players at this position</div>
+                          )}
+                        </div>
                       </div>
+                      {/* Spacer line between positions */}
+                      {index < 4 && (
+                        <div className="h-4"></div>
+                      )}
                     </div>
                   );
                 })}

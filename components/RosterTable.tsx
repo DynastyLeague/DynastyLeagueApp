@@ -7,9 +7,10 @@ interface RosterTableProps {
   players: Player[];
   title: string;
   maxSlots: number;
+  headerTitle?: string;
 }
 
-export default function RosterTable({ players, title, maxSlots }: RosterTableProps) {
+export default function RosterTable({ players, title, maxSlots, headerTitle }: RosterTableProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
@@ -37,7 +38,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
       if (option.includes('RFA')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-red-400 bg-red-900/20' };
       if (option.includes('UFA') && !option.includes('EXT')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-blue-400 bg-blue-900/20' };
       if (option.includes('EXT/UFA')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-orange-400 bg-orange-900/20' };
-      if (option.includes('DEV')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-red-800 bg-red-900/20' };
+      if (option.includes('DEV')) return { text: 'DEV', color: 'text-red-800 bg-red-900/20' };
       // Handle DEV/RFA combination
       if (option.includes('DEV/RFA')) return { text: 'DEV/RFA', color: 'text-red-400 bg-red-900/20' };
     }
@@ -78,6 +79,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
             <thead className="bg-gray-700 sticky top-0 z-20">
               <tr>
                 <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600 w-[182px] z-30">
+                  {headerTitle || ''}
                 </th>
                 <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">25-26</th>
                 <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">26-27</th>
