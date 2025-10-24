@@ -1,6 +1,7 @@
 'use client';
 
 import { Player } from '@/lib/types';
+import { useState } from 'react';
 
 interface RosterTableProps {
   players: Player[];
@@ -9,6 +10,53 @@ interface RosterTableProps {
 }
 
 export default function RosterTable({ players, title, maxSlots }: RosterTableProps) {
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+
+  // Sort players by 25-26 salary (highest to lowest)
+  const sortedPlayers = [...players].sort((a, b) => {
+    const salaryA = typeof a.salary25_26 === 'number' ? a.salary25_26 : 0;
+    const salaryB = typeof b.salary25_26 === 'number' ? b.salary25_26 : 0;
+    return salaryB - salaryA; // Highest to lowest
+  });
+
+  const openHistoryModal = (player: Player) => {
+    setSelectedPlayer(player);
+    setShowHistoryModal(true);
+  };
+
+  const closeHistoryModal = () => {
+    setSelectedPlayer(null);
+    setShowHistoryModal(false);
+  };
+
+  const getSalaryDisplay = (salary: any, option?: string) => {
+    // Check if the option column indicates a contract status
+    if (option) {
+      if (option.includes('TO')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-green-400 bg-green-900/20' };
+      if (option.includes('RFA')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-red-400 bg-red-900/20' };
+      if (option.includes('UFA') && !option.includes('EXT')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-blue-400 bg-blue-900/20' };
+      if (option.includes('EXT/UFA')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-orange-400 bg-orange-900/20' };
+      if (option.includes('DEV')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-red-800 bg-red-900/20' };
+    }
+
+    if (typeof salary === 'string') {
+      // Handle contract status values in salary field itself
+      if (salary.includes('TO')) return { text: 'TO', color: 'text-green-400 bg-green-900/20' };
+      if (salary.includes('RFA')) return { text: 'RFA', color: 'text-red-400 bg-red-900/20' };
+      if (salary.includes('UFA') && !salary.includes('EXT')) return { text: 'UFA', color: 'text-blue-400 bg-blue-900/20' };
+      if (salary.includes('EXT/UFA')) return { text: 'EXT/UFA', color: 'text-orange-400 bg-orange-900/20' };
+      if (salary.includes('DEV')) return { text: 'DEV', color: 'text-red-800 bg-red-900/20' };
+      return { text: salary, color: 'text-gray-300' };
+    }
+    
+    if (typeof salary === 'number' && salary > 0) {
+      return { text: `$${salary.toFixed(2)}m`, color: 'text-gray-300' };
+    }
+    
+    return { text: 'N/A', color: 'text-gray-500' };
+  };
+
   return (
     <div className="mb-8">
       <h2 className="text-lg font-semibold mb-4 text-white">
@@ -17,89 +65,149 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
       
       <div className="bg-gray-800 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-700">
+          <table className="w-full table-fixed">
+            <thead className="bg-gray-700 sticky top-0 z-20">
               <tr>
-                <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600">
-                  Player Name
+                <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600 w-[182px] z-30">
+                  Player
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">NBA Team</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Position</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Age</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Rank Type</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Rank Avg</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">25-26</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">26-27</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">27-28</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">28-29</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">29-30</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">30-31</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">31-32</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Contract Year</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Signed Via</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Contract Notes</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Option</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Accept/Decline</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Ext Elig</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">25-26</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">26-27</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">27-28</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">28-29</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">29-30</th>
+                <th className="px-3 py-3 text-center text-sm font-medium text-gray-300 w-24">30-31</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-600">
-              {players.map((player, index) => (
-                <tr key={player.playerId} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
-                  <td className="sticky left-0 bg-inherit px-4 py-3 text-sm text-white font-medium border-r border-gray-600">
-                    {player.name}
+              {sortedPlayers.map((player, index) => (
+                <tr key={player.playerId} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-700'}>
+                  <td className="sticky left-0 bg-inherit px-4 py-2 text-sm border-r border-gray-600 w-[182px] z-10">
+                    <div className="flex items-start gap-3">
+                      {/* Player Photo */}
+                      <div className="flex-shrink-0 pt-1 pb-1">
+                        {player.photo ? (
+                          <img
+                            src={`/api/image?url=${encodeURIComponent(player.photo)}`}
+                            alt={`${player.name} photo`}
+                            className="h-12 w-12 object-cover rounded"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div 
+                          className={`h-12 w-12 bg-gray-600 flex items-center justify-center rounded text-white text-xs font-bold ${player.photo ? 'hidden' : ''}`}
+                        >
+                          {player.name?.slice(0, 2).toUpperCase()}
+                        </div>
+                      </div>
+                      
+                      {/* Player Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white font-medium text-base leading-tight">{player.name}</div>
+                        <div className="text-gray-400 text-sm mt-1 leading-tight">
+                          {player.position} - {player.nbaTeam} - {player.age}
+                        </div>
+                        <div className="text-gray-300 text-xs mt-1 leading-tight">
+                          {player.rankType} = {player.careerRank ? (typeof player.careerRank === 'number' && player.careerRank % 1 === 0 ? String(player.careerRank) : player.careerRank) : 'N/A'}
+                        </div>
+                        <button
+                          onClick={() => openHistoryModal(player)}
+                          className="text-gray-400 hover:text-white text-xs mt-1 transition-colors"
+                        >
+                          📝 History Log
+                        </button>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.nbaTeam}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.position}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.age}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.rankType}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.careerRank}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary25_26 === 'number' ? player.salary25_26 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary26_27 === 'number' ? player.salary26_27 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary27_28 === 'number' ? player.salary27_28 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary28_29 === 'number' ? player.salary28_29 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary29_30 === 'number' ? player.salary29_30 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary30_31 === 'number' ? player.salary30_31 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">${typeof player.salary31_32 === 'number' ? player.salary31_32 : '—'}M</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.contractLength}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.signedVia}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.contractNotes}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.option25_26}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">—</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{player.extension}</td>
+                  <td className="px-3 py-3 text-center text-base w-24">
+                    <span className={getSalaryDisplay(player.salary25_26, player.option25_26).color}>
+                      {getSalaryDisplay(player.salary25_26, player.option25_26).text}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center text-base w-24">
+                    <span className={getSalaryDisplay(player.salary26_27, player.option26_27).color}>
+                      {getSalaryDisplay(player.salary26_27, player.option26_27).text}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center text-base w-24">
+                    <span className={getSalaryDisplay(player.salary27_28, player.option27_28).color}>
+                      {getSalaryDisplay(player.salary27_28, player.option27_28).text}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center text-base w-24">
+                    <span className={getSalaryDisplay(player.salary28_29, player.option28_29).color}>
+                      {getSalaryDisplay(player.salary28_29, player.option28_29).text}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center text-base w-24">
+                    <span className={getSalaryDisplay(player.salary29_30, player.option29_30).color}>
+                      {getSalaryDisplay(player.salary29_30, player.option29_30).text}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-center text-base w-24">
+                    <span className={getSalaryDisplay(player.salary30_31, player.option30_31).color}>
+                      {getSalaryDisplay(player.salary30_31, player.option30_31).text}
+                    </span>
+                  </td>
                 </tr>
               ))}
               
               {/* Empty slots */}
               {Array.from({ length: maxSlots - players.length }).map((_, index) => (
-                <tr key={`empty-${index}`} className={(players.length + index) % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
-                  <td className="sticky left-0 bg-inherit px-4 py-3 text-sm text-gray-500 border-r border-gray-600">
-                    Empty Slot
+                <tr key={`empty-${index}`} className={(players.length + index) % 2 === 0 ? 'bg-gray-800' : 'bg-gray-700'}>
+                  <td className="sticky left-0 bg-inherit px-4 py-2 text-sm text-gray-500 border-r border-gray-600 w-[182px] z-10">
+                    <div className="flex items-start gap-3">
+                      {/* Empty Photo Placeholder */}
+                      <div className="flex-shrink-0 pt-1 pb-1">
+                        <div className="h-12 w-12 bg-gray-600 flex items-center justify-center rounded text-gray-400 text-xs font-bold">
+                          --
+                        </div>
+                      </div>
+                      
+                      {/* Empty Slot Text */}
+                      <div className="flex-1 min-w-0 flex items-center">
+                        <div className="text-gray-500">Empty Slot</div>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">-</td>
+                  <td className="px-3 py-3 text-center text-base text-gray-500 w-24">N/A</td>
+                  <td className="px-3 py-3 text-center text-base text-gray-500 w-24">N/A</td>
+                  <td className="px-3 py-3 text-center text-base text-gray-500 w-24">N/A</td>
+                  <td className="px-3 py-3 text-center text-base text-gray-500 w-24">N/A</td>
+                  <td className="px-3 py-3 text-center text-base text-gray-500 w-24">N/A</td>
+                  <td className="px-3 py-3 text-center text-base text-gray-500 w-24">N/A</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* History Log Modal */}
+      {showHistoryModal && selectedPlayer && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-gray-800 rounded-lg p-4 max-w-lg max-h-[60vh] overflow-y-auto mx-4">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-bold text-white">
+                History Log - {selectedPlayer.name}
+              </h3>
+              <button
+                onClick={closeHistoryModal}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="text-gray-300 whitespace-pre-wrap text-sm">
+              {selectedPlayer.playerHistoryLog || 'No history log available for this player.'}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
