@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Team, Player } from "@/lib/types";
+import { Team, Player, Matchup, WeekDate } from "@/lib/types";
 import { getTeamRosterByStatus } from "@/lib/googleSheets";
 import RosterTable from "@/components/RosterTable";
 import { useAuth } from "@/lib/auth";
@@ -17,6 +17,10 @@ export default function RosterPage() {
   const [draftCapital, setDraftCapital] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState<string>("home");
+  const [currentMatchup, setCurrentMatchup] = useState<Matchup | null>(null);
+  const [upcomingMatchup, setUpcomingMatchup] = useState<Matchup | null>(null);
+  const [weekDates, setWeekDates] = useState<WeekDate[]>([]);
+  const [currentWeek, setCurrentWeek] = useState<number>(0);
 
   // Load teams on mount and set current team as default
   useEffect(() => {
@@ -43,6 +47,34 @@ export default function RosterPage() {
     loadTeams();
   }, [currentTeam]);
 
+  // Determine current week based on current date from Google Sheets
+  const getCurrentWeek = async (weekDates: WeekDate[]): Promise<number> => {
+    try {
+      const currentTimeRes = await fetch('/api/current-time');
+      if (!currentTimeRes.ok) {
+        console.error('Failed to fetch current time');
+        return 1;
+      }
+      
+      const currentTime = await currentTimeRes.json();
+      const currentDate = new Date(currentTime.currentDate);
+      
+      for (const weekDate of weekDates) {
+        const weekStart = new Date(weekDate.startDate);
+        const weekEnd = new Date(weekDate.endDate);
+        
+        if (currentDate >= weekStart && currentDate <= weekEnd) {
+          return weekDate.week;
+        }
+      }
+      
+      return 1; // Default to week 1 if no match found
+    } catch (error) {
+      console.error('Error determining current week:', error);
+      return 1;
+    }
+  };
+
   // Load roster data when team changes
   useEffect(() => {
     const loadRosterData = async () => {
@@ -65,6 +97,38 @@ export default function RosterPage() {
           const draftData = await draftRes.json();
           setDraftCapital(draftData);
         }
+
+        // Load matchup data
+        const [matchupsRes, weekDatesRes] = await Promise.all([
+          fetch('/api/matchups'),
+          fetch('/api/weekdates'),
+        ]);
+
+        if (weekDatesRes.ok) {
+          const weekDatesData: WeekDate[] = await weekDatesRes.json();
+          setWeekDates(weekDatesData);
+          
+          const calculatedWeek = await getCurrentWeek(weekDatesData);
+          setCurrentWeek(calculatedWeek);
+        }
+
+        if (matchupsRes.ok) {
+          const matchupsData: Matchup[] = await matchupsRes.json();
+          
+          // Find current matchup
+          const currentMatch = matchupsData.find(m => 
+            (m.team1Id === selectedTeamId || m.team2Id === selectedTeamId) && 
+            m.week === currentWeek
+          );
+          setCurrentMatchup(currentMatch || null);
+
+          // Find upcoming matchup (next week)
+          const upcomingMatch = matchupsData.find(m => 
+            (m.team1Id === selectedTeamId || m.team2Id === selectedTeamId) && 
+            m.week === currentWeek + 1
+          );
+          setUpcomingMatchup(upcomingMatch || null);
+        }
       } catch (error) {
         console.error("Error loading roster data:", error);
       } finally {
@@ -72,7 +136,7 @@ export default function RosterPage() {
       }
     };
     loadRosterData();
-  }, [selectedTeamId]);
+  }, [selectedTeamId, currentWeek]);
 
   const handleTeamChange = (teamId: string) => {
     setSelectedTeamId(teamId);
@@ -320,17 +384,73 @@ export default function RosterPage() {
           {selectedSection === "home" && (
             <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">TEAM HOME</h2>
+              
+              {/* Current Matchup */}
               <div className="bg-gray-700 p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Current Matchup</h3>
-                <div className="text-gray-300">Week X vs Team Name - Coming Soon</div>
+                {currentMatchup ? (
+                  <div className="text-gray-300">
+                    <div className="text-lg font-semibold text-white mb-2">
+                      Week {currentMatchup.week} vs {currentMatchup.team1Id === selectedTeamId ? currentMatchup.team2Name : currentMatchup.team1Name}
+                    </div>
+                    <div className="text-sm">
+                      ({currentMatchup.team1Id === selectedTeamId ? 
+                        `${currentMatchup.team1Score} vs ${currentMatchup.team2Score}` : 
+                        `${currentMatchup.team2Score} vs ${currentMatchup.team1Score}`})
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-300">No current matchup found</div>
+                )}
               </div>
+
+              {/* Upcoming Matchup */}
               <div className="bg-gray-700 p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Upcoming Matchup</h3>
-                <div className="text-gray-300">Week X+1 vs Team Name - Coming Soon</div>
+                {upcomingMatchup ? (
+                  <div className="text-gray-300">
+                    <div className="text-lg font-semibold text-white mb-2">
+                      Week {upcomingMatchup.week} vs {upcomingMatchup.team1Id === selectedTeamId ? upcomingMatchup.team2Name : upcomingMatchup.team1Name}
+                    </div>
+                    <div className="text-sm">
+                      ({upcomingMatchup.team1Id === selectedTeamId ? 
+                        `${upcomingMatchup.team2Conference || 'TBD'} | Position: ${upcomingMatchup.team2Standing || 'TBD'} | Record: ${upcomingMatchup.team2Record || 'TBD'}` : 
+                        `${upcomingMatchup.team1Conference || 'TBD'} | Position: ${upcomingMatchup.team1Standing || 'TBD'} | Record: ${upcomingMatchup.team1Record || 'TBD'}`})
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-300">No upcoming matchup found</div>
+                )}
               </div>
+
+              {/* Season Record & Standing */}
               <div className="bg-gray-700 p-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Season Record & Standing</h3>
-                <div className="text-gray-300">Record: 0-0 | Position: TBD - Coming Soon</div>
+                {currentMatchup ? (
+                  <div className="text-gray-300 space-y-1">
+                    <div className="text-sm">
+                      Conference: {currentMatchup.team1Id === selectedTeamId ? 
+                        currentMatchup.team1Conference || 'TBD' : 
+                        currentMatchup.team2Conference || 'TBD'}
+                    </div>
+                    <div className="text-sm">
+                      Position: {currentMatchup.team1Id === selectedTeamId ? 
+                        currentMatchup.team1Standing || 'TBD' : 
+                        currentMatchup.team2Standing || 'TBD'}
+                    </div>
+                    <div className="text-sm">
+                      Record: {currentMatchup.team1Id === selectedTeamId ? 
+                        currentMatchup.team1Record || 'TBD' : 
+                        currentMatchup.team2Record || 'TBD'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-300 space-y-1">
+                    <div className="text-sm">Conference: TBD</div>
+                    <div className="text-sm">Position: TBD</div>
+                    <div className="text-sm">Record: TBD</div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -392,9 +512,9 @@ export default function RosterPage() {
           {/* Roster Tables */}
           <section className="px-6 mb-6">
                 <div className="space-y-4 mb-4">
-                  <h2 className="text-lg font-semibold text-white">MAIN ROSTER (/20) - {active.length} Active status players</h2>
-                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT (/6) - {dev.length} Development status players</h2>
-                  <h2 className="text-lg font-semibold text-white">INJURY RESERVE (/2) - {inj.length} Injury status players</h2>
+                  <h2 className="text-lg font-semibold text-white">MAIN ROSTER ({active.length}/20)</h2>
+                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT ({dev.length}/6)</h2>
+                  <h2 className="text-lg font-semibold text-white">INJURY RESERVE ({inj.length}/2)</h2>
                 </div>
                 
             <RosterTable 
@@ -429,7 +549,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "depth-chart" && (
-            <div className="px-6 pb-40">
+            <div className="px-6 pb-48">
               <h2 className="text-2xl font-bold mb-4 text-white">DEPTH CHART</h2>
               <div className="space-y-6">
                 {[
@@ -470,25 +590,15 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "draft-picks" && (
-            <div className="px-6 pb-40">
+            <div className="px-6 pb-48">
               <h2 className="text-2xl font-bold mb-4 text-white">CURRENT DRAFT CAPITAL</h2>
               
-              {/* Notes Section */}
-              {draftCapital?.NOTES && (
-                <div className="bg-gray-700 p-4 mb-6">
-                  <h3 className="text-lg font-semibold mb-3 text-white">NOTES</h3>
-                  <div className="text-gray-300 whitespace-pre-line text-sm">
-                    {draftCapital.NOTES}
-                  </div>
-                </div>
-              )}
-
               {/* Draft Picks by Year */}
               <div className="space-y-6">
                 {[2026, 2027, 2028, 2029, 2030].map((year, index) => (
                   <div key={year}>
                     <div className="bg-gray-700 p-4">
-                      <h3 className="text-lg font-semibold mb-3 text-white">{year}-{String(year + 1).slice(-2)}</h3>
+                      <h3 className="text-lg font-semibold mb-3 text-white">{year}</h3>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div className="text-center">
                           <div className="text-gray-300">1st Round</div>
@@ -511,6 +621,16 @@ export default function RosterPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Notes Section */}
+              {draftCapital?.NOTES && (
+                <div className="bg-gray-700 p-4 mt-6">
+                  <h3 className="text-lg font-semibold mb-3 text-white">NOTES</h3>
+                  <div className="text-gray-300 whitespace-pre-line text-sm">
+                    {draftCapital.NOTES}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
