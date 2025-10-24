@@ -193,18 +193,18 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
             <div className="bg-gray-800 border-2 border-gray-600 rounded-lg shadow-2xl w-80 max-h-96 overflow-hidden">
               <div className="flex justify-between items-center p-3 bg-gray-700 border-b border-gray-600">
                 <h3 className="text-sm font-bold text-white">
-                  History Log - {selectedPlayer.name}
-                </h3>
-                <button
-                  onClick={closeHistoryModal}
+                History Log - {selectedPlayer.name}
+              </h3>
+              <button
+                onClick={closeHistoryModal}
                   className="text-gray-400 hover:text-white text-lg font-bold"
-                >
-                  ×
-                </button>
-              </div>
+              >
+                ×
+              </button>
+            </div>
               <div className="p-3 max-h-80 overflow-y-auto">
                 <div className="text-gray-300 whitespace-pre-wrap text-xs leading-relaxed">
-                  {selectedPlayer.playerHistoryLog || 'No history log available for this player.'}
+              {selectedPlayer.playerHistoryLog || 'No history log available for this player.'}
                 </div>
               </div>
             </div>

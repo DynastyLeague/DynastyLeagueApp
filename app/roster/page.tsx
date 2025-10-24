@@ -13,6 +13,7 @@ export default function RosterPage() {
   const [dev, setDev] = useState<Player[]>([]);
   const [inj, setInj] = useState<Player[]>([]);
   const [draftPicks, setDraftPicks] = useState<Record<string, string> | null>(null);
+  const [draftCapital, setDraftCapital] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState<string>("home");
 
@@ -58,6 +59,7 @@ export default function RosterPage() {
         if (draftRes.ok) {
           const draftData = await draftRes.json();
           setDraftPicks(draftData);
+          setDraftCapital(draftData);
         }
       } catch (error) {
         console.error("Error loading roster data:", error);
@@ -153,6 +155,44 @@ export default function RosterPage() {
     );
   };
 
+  // Get players by position for depth chart
+  const getPlayersByPosition = (position: string) => {
+    return players.filter(player => {
+      const playerPos = player.position.toUpperCase();
+      switch (position) {
+        case "G":
+          return playerPos === "G";
+        case "G/F":
+          return playerPos === "G/F";
+        case "F":
+          return playerPos === "F";
+        case "F/C":
+          return playerPos === "F/C";
+        case "C":
+          return playerPos === "C";
+        default:
+          return false;
+      }
+    }).sort((a, b) => {
+      // Sort by 2YR-RK (lowest to highest)
+      const rankA = a.twoYearRank;
+      const rankB = b.twoYearRank;
+      
+      // Treat no data or "-" as highest (no ranking yet)
+      if (!rankA || rankA === "-" || rankA === "") return 1;
+      if (!rankB || rankB === "-" || rankB === "") return -1;
+      
+      // Convert to numbers for comparison
+      const numA = parseFloat(rankA.toString());
+      const numB = parseFloat(rankB.toString());
+      
+      if (isNaN(numA)) return 1;
+      if (isNaN(numB)) return -1;
+      
+      return numA - numB;
+    });
+  };
+
   if (loading && !selectedTeam) {
     return (
       <div className="min-h-screen bg-gray-800 flex items-center justify-center">
@@ -192,26 +232,26 @@ export default function RosterPage() {
             
             {/* Team Dropdown */}
             <div className="flex-1">
-              <div className="relative">
-                <select
-                  id="team-select"
-                  value={selectedTeamId}
-                  onChange={(e) => handleTeamChange(e.target.value)}
+        <div className="relative">
+          <select
+            id="team-select"
+            value={selectedTeamId}
+            onChange={(e) => handleTeamChange(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
-                >
-                  {teams.map((team) => (
-                    <option key={team.teamId} value={team.teamId} className="bg-gray-700 text-white">
-                      {team.teamName}
-                    </option>
-                  ))}
-                </select>
-                {/* Custom dropdown arrow */}
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          >
+            {teams.map((team) => (
+              <option key={team.teamId} value={team.teamId} className="bg-gray-700 text-white">
+                {team.teamName}
+              </option>
+            ))}
+          </select>
+          {/* Custom dropdown arrow */}
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
               <div className="text-gray-300 text-sm mt-1">{selectedTeam.conference} Conference</div>
             </div>
           </div>
@@ -283,7 +323,6 @@ export default function RosterPage() {
                       <thead className="bg-gray-700 sticky top-0 z-20">
                         <tr>
                           <th className="sticky left-0 bg-gray-700 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600 w-[182px] z-30">
-                            YEAR
                           </th>
                           <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">25-26</th>
                           <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">26-27</th>
@@ -291,7 +330,7 @@ export default function RosterPage() {
                           <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">28-29</th>
                           <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">29-30</th>
                           <th className="px-3 py-3 text-center text-base font-medium text-gray-300 w-24 relative z-10">30-31</th>
-                        </tr>
+                    </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-600">
                         <tr className="bg-gray-800">
@@ -302,7 +341,7 @@ export default function RosterPage() {
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('28-29'))}</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('29-30'))}</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapAllocations('30-31'))}</td>
-                        </tr>
+                    </tr>
                         <tr className="bg-gray-700">
                           <td className="sticky left-0 bg-inherit px-4 py-2 text-sm border-r border-gray-600 w-[182px] z-10 text-white font-semibold">CAP SPACE</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('25-26'))}</td>
@@ -311,7 +350,7 @@ export default function RosterPage() {
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('28-29'))}</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('29-30'))}</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateCapSpace('30-31'))}</td>
-                        </tr>
+                    </tr>
                         <tr className="bg-gray-800">
                           <td className="sticky left-0 bg-inherit px-4 py-2 text-sm border-r border-gray-600 w-[182px] z-10 text-white font-semibold">HARD CAP LIMIT</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('25-26'))}</td>
@@ -320,43 +359,43 @@ export default function RosterPage() {
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('28-29'))}</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('29-30'))}</td>
                           <td className="px-3 py-3 text-center text-base w-24">{formatCurrency(calculateHardCapLimit('30-31'))}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    </tr>
+                  </tbody>
+                </table>
                   </div>
-                </div>
-              </section>
+              </div>
+            </section>
 
-              {/* Roster Tables */}
-              <section className="px-6 mb-6">
+          {/* Roster Tables */}
+          <section className="px-6 mb-6">
                 <div className="flex gap-8 mb-4">
-                  <h2 className="text-lg font-semibold text-white">MAIN ({active.length}/20)</h2>
-                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT ({dev.length}/6)</h2>
-                  <h2 className="text-lg font-semibold text-white">INJURY ({inj.length}/2)</h2>
+                  <h2 className="text-lg font-semibold text-white">MAIN</h2>
+                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT</h2>
+                  <h2 className="text-lg font-semibold text-white">INJURY</h2>
                 </div>
                 
-                <RosterTable 
-                  players={active} 
+            <RosterTable 
+              players={active} 
                   title="" 
-                  maxSlots={20} 
-                />
-              </section>
-              
-              <section className="px-6 mb-6">
-                <RosterTable 
-                  players={dev} 
+              maxSlots={20} 
+            />
+          </section>
+          
+          <section className="px-6 mb-6">
+            <RosterTable 
+              players={dev} 
                   title="" 
-                  maxSlots={6} 
-                />
-              </section>
-              
-              <section className="px-6 mb-6">
-                <RosterTable 
-                  players={inj} 
+              maxSlots={6} 
+            />
+          </section>
+          
+          <section className="px-6 mb-6">
+            <RosterTable 
+              players={inj} 
                   title="" 
-                  maxSlots={2} 
-                />
-              </section>
+              maxSlots={2} 
+            />
+          </section>
 
               {/* Bottom spacing */}
               <div className="h-32"></div>
@@ -367,51 +406,76 @@ export default function RosterPage() {
             <div className="px-6 pb-32">
               <h2 className="text-2xl font-bold mb-4 text-white">DEPTH CHART</h2>
               <div className="space-y-4">
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">Guards</h3>
-                  <div className="text-gray-300">Coming Soon</div>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">Guard/Forward</h3>
-                  <div className="text-gray-300">Coming Soon</div>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">Forward</h3>
-                  <div className="text-gray-300">Coming Soon</div>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">Forward/Center</h3>
-                  <div className="text-gray-300">Coming Soon</div>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">Center</h3>
-                  <div className="text-gray-300">Coming Soon</div>
-                </div>
+                {[
+                  { key: "G", title: "Guard" },
+                  { key: "G/F", title: "Guard/Forward" },
+                  { key: "F", title: "Forward" },
+                  { key: "F/C", title: "Forward/Center" },
+                  { key: "C", title: "Center" }
+                ].map(({ key, title }) => {
+                  const positionPlayers = getPlayersByPosition(key);
+                  return (
+                    <div key={key} className="bg-gray-700 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-white">
+                        {title} ({positionPlayers.length})
+                      </h3>
+                      <div className="space-y-2">
+                        {positionPlayers.length > 0 ? (
+                          positionPlayers.map((player, index) => (
+                            <div key={player.playerId} className="text-gray-300 text-sm">
+                              {player.name} ({player.nbaTeam}) - Ranked #{player.twoYearRank || "-"}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-gray-500 text-sm italic">No players at this position</div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {selectedSection === "draft-picks" && (
             <div className="px-6 pb-32">
-              <h2 className="text-2xl font-bold mb-4 text-white">FUTURE DRAFT PICKS</h2>
-              <div className="space-y-4">
-                {[2025, 2026, 2027, 2028, 2029, 2030, 2031].map(year => (
-                  <div key={year} className="bg-gray-700 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold mb-3 text-white">{year}-{String(year + 1).slice(-2)}</h3>
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div className="text-center">
-                        <div className="text-gray-300">1st Round</div>
-                        <div className="font-semibold text-white">Coming Soon</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-300">2nd Round</div>
-                        <div className="font-semibold text-white">Coming Soon</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-300">3rd Round</div>
-                        <div className="font-semibold text-white">Coming Soon</div>
+              <h2 className="text-2xl font-bold mb-4 text-white">CURRENT DRAFT CAPITAL</h2>
+              
+              {/* Notes Section */}
+              {draftCapital?.NOTES && (
+                <div className="bg-gray-700 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-semibold mb-3 text-white">NOTES</h3>
+                  <div className="text-gray-300 whitespace-pre-line text-sm">
+                    {draftCapital.NOTES}
+                  </div>
+                </div>
+              )}
+
+              {/* Draft Picks by Year */}
+              <div className="space-y-6">
+                {[2026, 2027, 2028, 2029, 2030].map((year, index) => (
+                  <div key={year}>
+                    <div className="bg-gray-700 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-white">{year}-{String(year + 1).slice(-2)}</h3>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div className="text-center">
+                          <div className="text-gray-300">1st Round</div>
+                          <div className="font-semibold text-white">{draftCapital?.[`${year} Round 1`] || '—'}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-gray-300">2nd Round</div>
+                          <div className="font-semibold text-white">{draftCapital?.[`${year} Round 2`] || '—'}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-gray-300">3rd Round</div>
+                          <div className="font-semibold text-white">{draftCapital?.[`${year} Round 3`] || '—'}</div>
+                        </div>
                       </div>
                     </div>
+                    {/* Spacer line between years */}
+                    {index < 4 && (
+                      <div className="h-4"></div>
+                    )}
                   </div>
                 ))}
               </div>
