@@ -650,7 +650,7 @@ export default function WeeklySelectionPage() {
       )}
 
       {/* Content */}
-      <div className="p-4 pb-40 space-y-6">
+      <div className="px-6 pb-40 space-y-6">
         {dataLoading ? (
           <div className="text-center py-8">
             <div className="text-white">Loading data...</div>

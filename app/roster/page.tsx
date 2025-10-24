@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Team, Player } from "@/lib/types";
 import { getTeamRosterByStatus } from "@/lib/googleSheets";
 import RosterTable from "@/components/RosterTable";
+import { useAuth } from "@/lib/auth";
 
 export default function RosterPage() {
+  const { currentTeam } = useAuth();
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -17,7 +19,7 @@ export default function RosterPage() {
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState<string>("home");
 
-  // Load teams on mount
+  // Load teams on mount and set current team as default
   useEffect(() => {
     const loadTeams = async () => {
       try {
@@ -25,8 +27,12 @@ export default function RosterPage() {
         if (res.ok) {
           const data: Team[] = await res.json();
           setTeams(data);
-          // Set first team as default
-          if (data.length > 0) {
+          
+          // Set current team as default if available, otherwise first team
+          if (currentTeam) {
+            setSelectedTeamId(currentTeam.teamId);
+            setSelectedTeam(currentTeam);
+          } else if (data.length > 0) {
             setSelectedTeamId(data[0].teamId);
             setSelectedTeam(data[0]);
           }
@@ -36,7 +42,7 @@ export default function RosterPage() {
       }
     };
     loadTeams();
-  }, []);
+  }, [currentTeam]);
 
   // Load roster data when team changes
   useEffect(() => {
@@ -237,11 +243,11 @@ export default function RosterPage() {
             id="team-select"
             value={selectedTeamId}
             onChange={(e) => handleTeamChange(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
+                  className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
           >
             {teams.map((team) => (
               <option key={team.teamId} value={team.teamId} className="bg-gray-700 text-white">
-                {team.teamName}
+                {team.teamName.toUpperCase()}
               </option>
             ))}
           </select>
@@ -268,7 +274,7 @@ export default function RosterPage() {
             id="section-select"
             value={selectedSection}
             onChange={(e) => setSelectedSection(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
+            className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-10"
           >
             <option value="home" className="bg-gray-700 text-white">HOME</option>
             <option value="rosters" className="bg-gray-700 text-white">ROSTER</option>
@@ -297,15 +303,15 @@ export default function RosterPage() {
           {selectedSection === "home" && (
             <div className="px-6 pb-32">
               <h2 className="text-2xl font-bold mb-4 text-white">TEAM HOME</h2>
-              <div className="bg-gray-700 rounded-lg p-6 mb-6">
+              <div className="bg-gray-700 p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Current Matchup</h3>
                 <div className="text-gray-300">Week X vs Team Name - Coming Soon</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-6 mb-6">
+              <div className="bg-gray-700 p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Upcoming Matchup</h3>
                 <div className="text-gray-300">Week X+1 vs Team Name - Coming Soon</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-6">
+              <div className="bg-gray-700 p-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Season Record & Standing</h3>
                 <div className="text-gray-300">Record: 0-0 | Position: TBD - Coming Soon</div>
               </div>
@@ -317,7 +323,7 @@ export default function RosterPage() {
               {/* Salary Cap Breakdown */}
               <section className="px-6 mb-2">
                 <h2 className="text-2xl font-bold mb-4 text-white">SALARY CAP BREAKDOWN</h2>
-                <div className="bg-gray-800 rounded-lg overflow-hidden">
+                <div className="bg-gray-800 overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full table-fixed">
                       <thead className="bg-gray-700 sticky top-0 z-20">
@@ -415,7 +421,7 @@ export default function RosterPage() {
                 ].map(({ key, title }) => {
                   const positionPlayers = getPlayersByPosition(key);
                   return (
-                    <div key={key} className="bg-gray-700 rounded-lg p-4">
+                    <div key={key} className="bg-gray-700 p-4">
                       <h3 className="text-lg font-semibold mb-3 text-white">
                         {title} ({positionPlayers.length})
                       </h3>
@@ -443,7 +449,7 @@ export default function RosterPage() {
               
               {/* Notes Section */}
               {draftCapital?.NOTES && (
-                <div className="bg-gray-700 rounded-lg p-4 mb-6">
+                <div className="bg-gray-700 p-4 mb-6">
                   <h3 className="text-lg font-semibold mb-3 text-white">NOTES</h3>
                   <div className="text-gray-300 whitespace-pre-line text-sm">
                     {draftCapital.NOTES}
@@ -455,7 +461,7 @@ export default function RosterPage() {
               <div className="space-y-6">
                 {[2026, 2027, 2028, 2029, 2030].map((year, index) => (
                   <div key={year}>
-                    <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="bg-gray-700 p-4">
                       <h3 className="text-lg font-semibold mb-3 text-white">{year}-{String(year + 1).slice(-2)}</h3>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div className="text-center">
@@ -485,7 +491,7 @@ export default function RosterPage() {
           {selectedSection === "season-history" && (
             <div className="px-6 pb-32">
               <h2 className="text-2xl font-bold mb-4 text-white">SEASON BY SEASON HISTORY</h2>
-              <div className="bg-gray-700 rounded-lg p-6">
+              <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
               </div>
             </div>
@@ -494,7 +500,7 @@ export default function RosterPage() {
           {selectedSection === "player-stats" && (
             <div className="px-6 pb-32">
               <h2 className="text-2xl font-bold mb-4 text-white">ALL-TIME PLAYER STATS</h2>
-              <div className="bg-gray-700 rounded-lg p-6">
+              <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
               </div>
             </div>
@@ -503,7 +509,7 @@ export default function RosterPage() {
           {selectedSection === "player-records" && (
             <div className="px-6 pb-32">
               <h2 className="text-2xl font-bold mb-4 text-white">PLAYER RECORDS</h2>
-              <div className="bg-gray-700 rounded-lg p-6">
+              <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
               </div>
             </div>
@@ -512,7 +518,7 @@ export default function RosterPage() {
           {selectedSection === "team-records" && (
             <div className="px-6 pb-32">
               <h2 className="text-2xl font-bold mb-4 text-white">TEAM RECORDS</h2>
-              <div className="bg-gray-700 rounded-lg p-6">
+              <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
               </div>
             </div>

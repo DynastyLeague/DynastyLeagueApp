@@ -65,7 +65,7 @@ export default function BottomNav({ }: BottomNavProps) {
       isActive: pathname === '/matchups'
     },
     {
-      name: 'ROSTERS',
+      name: 'TEAM INFO',
       href: '/roster',
       icon: UserGroupIcon,
       isActive: pathname === '/roster'

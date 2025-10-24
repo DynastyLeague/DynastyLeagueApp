@@ -63,7 +63,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
         {title} ({players.length}/{maxSlots})
       </h2>
       
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
+      <div className="bg-gray-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full table-fixed">
             <thead className="bg-gray-700 sticky top-0 z-20">
@@ -89,7 +89,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
                           <img
                             src={`/api/image?url=${encodeURIComponent(player.photo)}`}
                             alt={`${player.name} photo`}
-                            className="h-12 w-12 object-cover rounded"
+                            className="h-12 w-12 object-cover"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                               const fallback = e.currentTarget.nextElementSibling as HTMLElement;
@@ -98,7 +98,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
                           />
                         ) : null}
                         <div 
-                          className={`h-12 w-12 bg-gray-600 flex items-center justify-center rounded text-white text-xs font-bold ${player.photo ? 'hidden' : ''}`}
+                          className={`h-12 w-12 bg-gray-600 flex items-center justify-center text-white text-xs font-bold ${player.photo ? 'hidden' : ''}`}
                         >
                           {player.name?.slice(0, 2).toUpperCase()}
                         </div>
@@ -162,7 +162,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
                     <div className="flex items-start gap-3">
                       {/* Empty Photo Placeholder */}
                       <div className="flex-shrink-0 pt-1 pb-1">
-                        <div className="h-12 w-12 bg-gray-600 flex items-center justify-center rounded text-gray-400 text-xs font-bold">
+                        <div className="h-12 w-12 bg-gray-600 flex items-center justify-center text-gray-400 text-xs font-bold">
                           --
                         </div>
                       </div>
@@ -190,7 +190,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
       {showHistoryModal && selectedPlayer && (
         <div className="fixed inset-0 z-50 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-            <div className="bg-gray-800 border-2 border-gray-600 rounded-lg shadow-2xl w-80 max-h-96 overflow-hidden">
+            <div className="bg-gray-800 border-2 border-gray-600 shadow-2xl w-80 max-h-96 overflow-hidden">
               <div className="flex justify-between items-center p-3 bg-gray-700 border-b border-gray-600">
                 <h3 className="text-sm font-bold text-white">
                 History Log - {selectedPlayer.name}
