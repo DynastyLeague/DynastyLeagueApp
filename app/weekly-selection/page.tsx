@@ -346,7 +346,7 @@ export default function WeeklySelectionPage() {
     if ((currentTeam || viewTeamId) && matchups.length > 0) {
       const id = viewTeamId || currentTeam?.teamId || '';
       const matchup = matchups.find(m => 
-        m.team1Id === id || m.team2Id === id
+        (m.team1Id === id || m.team2Id === id) && m.week === currentWeek
       );
       setCurrentMatchup(matchup || null);
     }

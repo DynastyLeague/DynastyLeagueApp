@@ -122,7 +122,25 @@ export default function RosterPage() {
 
   // Calculate cap space
   const calculateCapSpace = (year: string) => {
-    const salaryCap = year === '25-26' ? 247.2 : 276.87;
+    let salaryCap = year === '25-26' ? 247.2 : 276.87;
+    
+    // Add Dynasty Cup bonus for 25-26 season only
+    if (year === '25-26' && selectedTeam) {
+      const dynastyCupBonuses: Record<string, number> = {
+        'T001': 12.36, // Armstrong's Army
+        'T002': 3.71,  // Bort Chasing Boards
+        'T003': 3.71,  // Easy Money Magnets
+        'T004': 12.36, // Forever Young, Forever Wemby
+        'T011': 7.42,  // Squib Nation
+        'T012': 3.71,  // Tragic Bonsons
+        'T013': 3.71,  // Willsy's Gentlemen
+        'T014': 7.42   // Winchelsea Hardons
+      };
+      
+      const bonus = dynastyCupBonuses[selectedTeam.teamId] || 0;
+      salaryCap += bonus;
+    }
+    
     const allocations = calculateCapAllocations(year);
     return salaryCap - allocations;
   };
@@ -300,7 +318,7 @@ export default function RosterPage() {
       {selectedTeam && (
         <>
           {selectedSection === "home" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">TEAM HOME</h2>
               <div className="bg-gray-700 p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4 text-white">Current Matchup</h3>
@@ -374,9 +392,9 @@ export default function RosterPage() {
           {/* Roster Tables */}
           <section className="px-6 mb-6">
                 <div className="flex gap-8 mb-4">
-                  <h2 className="text-lg font-semibold text-white">MAIN</h2>
-                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT</h2>
-                  <h2 className="text-lg font-semibold text-white">INJURY</h2>
+                  <h2 className="text-lg font-semibold text-white">MAIN (/20)</h2>
+                  <h2 className="text-lg font-semibold text-white">DEVELOPMENT (/6)</h2>
+                  <h2 className="text-lg font-semibold text-white">INJURY (/2)</h2>
                 </div>
                 
             <RosterTable 
@@ -408,7 +426,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "depth-chart" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">DEPTH CHART</h2>
               <div className="space-y-4">
                 {[
@@ -443,7 +461,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "draft-picks" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">CURRENT DRAFT CAPITAL</h2>
               
               {/* Notes Section */}
@@ -488,7 +506,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "season-history" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">SEASON BY SEASON HISTORY</h2>
               <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
@@ -497,7 +515,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "player-stats" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">ALL-TIME PLAYER STATS</h2>
               <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
@@ -506,7 +524,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "player-records" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">PLAYER RECORDS</h2>
               <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>
@@ -515,7 +533,7 @@ export default function RosterPage() {
           )}
 
           {selectedSection === "team-records" && (
-            <div className="px-6 pb-32">
+            <div className="px-6 pb-40">
               <h2 className="text-2xl font-bold mb-4 text-white">TEAM RECORDS</h2>
               <div className="bg-gray-700 p-6">
                 <div className="text-gray-300">Coming Soon</div>

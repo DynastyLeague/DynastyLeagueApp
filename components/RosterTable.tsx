@@ -38,6 +38,8 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
       if (option.includes('UFA') && !option.includes('EXT')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-blue-400 bg-blue-900/20' };
       if (option.includes('EXT/UFA')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-orange-400 bg-orange-900/20' };
       if (option.includes('DEV')) return { text: typeof salary === 'number' && salary > 0 ? `$${salary.toFixed(2)}m` : 'N/A', color: 'text-red-800 bg-red-900/20' };
+      // Handle DEV/RFA combination
+      if (option.includes('DEV/RFA')) return { text: 'DEV/RFA', color: 'text-red-400 bg-red-900/20' };
     }
 
     if (typeof salary === 'string') {
@@ -47,11 +49,18 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
       if (salary.includes('UFA') && !salary.includes('EXT')) return { text: 'UFA', color: 'text-blue-400 bg-blue-900/20' };
       if (salary.includes('EXT/UFA')) return { text: 'EXT/UFA', color: 'text-orange-400 bg-orange-900/20' };
       if (salary.includes('DEV')) return { text: 'DEV', color: 'text-red-800 bg-red-900/20' };
+      // Handle DEV/RFA combination
+      if (salary.includes('DEV/RFA')) return { text: 'DEV/RFA', color: 'text-red-400 bg-red-900/20' };
       return { text: salary, color: 'text-gray-300' };
     }
     
-    if (typeof salary === 'number' && salary > 0) {
-      return { text: `$${salary.toFixed(2)}m`, color: 'text-gray-300' };
+    if (typeof salary === 'number') {
+      if (salary === 0) {
+        return { text: '$0.00m', color: 'text-gray-300' };
+      }
+      if (salary > 0) {
+        return { text: `$${salary.toFixed(2)}m`, color: 'text-gray-300' };
+      }
     }
     
     return { text: 'N/A', color: 'text-gray-500' };
@@ -60,7 +69,7 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
   return (
     <div className="mb-8">
       <h2 className="text-lg font-semibold mb-4 text-white">
-        {title} ({players.length}/{maxSlots})
+        {title}
       </h2>
       
       <div className="bg-gray-800 overflow-hidden">
@@ -190,20 +199,20 @@ export default function RosterTable({ players, title, maxSlots }: RosterTablePro
       {showHistoryModal && selectedPlayer && (
         <div className="fixed inset-0 z-50 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-            <div className="bg-gray-800 border-2 border-gray-600 shadow-2xl w-80 max-h-96 overflow-hidden">
-              <div className="flex justify-between items-center p-3 bg-gray-700 border-b border-gray-600">
-                <h3 className="text-sm font-bold text-white">
+            <div className="bg-white border-2 border-black shadow-2xl w-80 max-h-96 overflow-hidden">
+              <div className="flex justify-between items-center p-3 bg-gray-100 border-b border-black">
+                <h3 className="text-sm font-bold text-black">
                 History Log - {selectedPlayer.name}
               </h3>
               <button
                 onClick={closeHistoryModal}
-                  className="text-gray-400 hover:text-white text-lg font-bold"
+                  className="text-gray-600 hover:text-black text-lg font-bold"
               >
                 ×
               </button>
             </div>
               <div className="p-3 max-h-80 overflow-y-auto">
-                <div className="text-gray-300 whitespace-pre-wrap text-xs leading-relaxed">
+                <div className="text-black whitespace-pre-wrap text-xs leading-relaxed">
               {selectedPlayer.playerHistoryLog || 'No history log available for this player.'}
                 </div>
               </div>
