@@ -148,7 +148,7 @@ export default function DetailedMatchupPage() {
     if (value === undefined || value === null) return '-';
     if (!hasPlayed) return '-';
     const numeric = Number(value);
-    if (Number.isNaN(numeric) || numeric === 0) return '-';
+    if (Number.isNaN(numeric)) return '-';
     
     // Convert to decimal format (0.000 to 1.000)
     const asDecimal = numeric > 1 ? numeric / 100 : numeric;
@@ -159,8 +159,8 @@ export default function DetailedMatchupPage() {
     // If it's exactly 1, return as 1.000
     if (asDecimal >= 0.9995) return '1.000'; // Handle floating point rounding
     
-    // If it's effectively 0, return 0.000
-    if (asDecimal < 0.0005) return '0.000';
+    // If it's 0, return 0.000 (valid 0% FT%)
+    if (asDecimal === 0) return '0.000';
     
     // If less than 1, remove the leading 0 (e.g., 0.456 becomes .456)
     return formatted.substring(1); // Remove the '0' to show '.xxx'
@@ -518,7 +518,7 @@ export default function DetailedMatchupPage() {
                 <div className={`text-lg ${(matchup?.team2Drb || 0) > (matchup?.team1Drb || 0) ? 'text-green-400' : (matchup?.team2Drb || 0) < (matchup?.team1Drb || 0) ? 'text-red-400' : 'text-gray-400'}`}>{matchup?.team2Drb || 0}</div>
                 <div className={`text-lg ${(matchup?.team2FgPercent || 0) > (matchup?.team1FgPercent || 0) ? 'text-green-400' : (matchup?.team2FgPercent || 0) < (matchup?.team1FgPercent || 0) ? 'text-red-400' : 'text-gray-400'}`}>{formatPercentOneDecimal(matchup?.team2FgPercent || 0, true)}</div>
                 <div className="text-sm text-gray-400">{matchup?.team2Fgm || 0}/{matchup?.team2Fga || 0}</div>
-                <div className={`text-lg ${(matchup?.team2FtPercent || 0) > (matchup?.team1FtPercent || 0) ? 'text-green-400' : (matchup?.team2FtPercent || 0) < (matchup?.team1FtPercent || 0) ? 'text-red-400' : 'text-gray-400'}`}>{formatPercentOneDecimal(matchup?.team2FtPercent || 0, true)}</div>
+                <div className={`text-lg ${(matchup?.team2FtPercent || 0) > (matchup?.team1FtPercent || 0) ? 'text-green-400' : (matchup?.team2FtPercent || 0) < (matchup?.team1FtPercent || 0) ? 'text-red-400' : 'text-gray-400'}`}>{formatPercentOneDecimal(matchup?.team2FtPercent, true)}</div>
                 <div className="text-sm text-gray-400">{matchup?.team2Ftm || 0}/{matchup?.team2Fta || 0}</div>
               </div>
             </div>
