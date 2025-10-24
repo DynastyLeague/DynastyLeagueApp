@@ -60,7 +60,7 @@ export default function Home() {
           {teams.map((t) => (
             <Link
               key={t.teamId}
-              href={`/teams/${encodeURIComponent(t.teamId)}`}
+              href="/roster"
               className="group card p-3 flex items-center justify-center hover:shadow-xl transition-all duration-200"
             >
               {t.mainLogo ? (
