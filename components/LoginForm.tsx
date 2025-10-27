@@ -25,8 +25,8 @@ export default function LoginForm() {
     if (!success) {
       setError('Invalid email or password. Please try again.');
     } else {
-      // Redirect to root page after successful login
-      router.push('/');
+      // Redirect to weekly-selection page after successful login
+      router.push('/weekly-selection');
     }
   };
 

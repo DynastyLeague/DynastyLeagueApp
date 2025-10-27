@@ -31,7 +31,7 @@ export default function ProfileMenu() {
       {open && (
         <div className="mt-2 bg-gray-800 text-white shadow-xl p-2 min-w-[140px]">
           <div className="px-2 py-1 text-xs text-gray-300">{currentTeam.teamName}</div>
-          <button onClick={async () => { setOpen(false); await logout(); location.href = '/login'; }} className="w-full text-left px-2 py-1 hover:bg-gray-700">Log out</button>
+          <button onClick={async () => { setOpen(false); await logout(); }} className="w-full text-left px-2 py-1 hover:bg-gray-700">Log out</button>
         </div>
       )}
     </div>

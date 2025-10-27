@@ -9,11 +9,18 @@ export async function middleware(req: NextRequest) {
   if (!protectedRoute) return NextResponse.next();
 
   const access = req.cookies.get('dl_access')?.value;
+  
+  if (!access) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+  
   const payload = await verifySession(access);
-  if (payload) return NextResponse.next();
+  
+  if (!payload) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
 
-  // No valid access; redirect to login page
-  return NextResponse.redirect(new URL('/login', req.url));
+  return NextResponse.next();
 }
 
 export const config = {

@@ -83,6 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
     setCurrentTeam(null);
     setRole(null);
+    // Force full page reload to clear all state
+    window.location.href = '/login';
   };
 
   return (
