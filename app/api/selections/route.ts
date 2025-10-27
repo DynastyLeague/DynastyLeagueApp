@@ -13,10 +13,9 @@ export async function GET(request: NextRequest) {
     const sheets = await getSheetsClient();
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
 
-    // Fetch all selections data from PlayerGameStats tab
+    // Fetch data from PlayerGameStats tab which has both submitted selections and their stats
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      // Headers: week matchup_id team_id team_name opp_team_name positions player_id player_name nba_team game_date nba_opposition submitted_date_time date_code TIME MIN PTS 3PM AST STL BLK ORB DRB FGM FGA FG% FTM FTA FT%
       range: 'PlayerGameStats!A:AB',
     });
 
@@ -27,15 +26,15 @@ export async function GET(request: NextRequest) {
     let filteredRows = dataRows;
     
     if (week) {
-      filteredRows = filteredRows.filter(row => row[0] === week);
+      filteredRows = filteredRows.filter(row => String(row[0]) === String(week));
     }
     
     if (teamId) {
-      filteredRows = filteredRows.filter(row => row[2] === teamId);
+      filteredRows = filteredRows.filter(row => String(row[2]) === String(teamId));
     }
 
     if (matchupId) {
-      filteredRows = filteredRows.filter(row => row[1] === matchupId);
+      filteredRows = filteredRows.filter(row => String(row[1]) === String(matchupId));
     }
 
     // Map to selection objects (schema aligns with PlayerGameStats tab headers)

@@ -87,51 +87,15 @@ export default function DetailedMatchupPage() {
   };
 
   const formatGameDisplay = (selection: Selection) => {
-    // Desired: "Wed OKC vs HOU"
-    const { gameDate, nbaOpposition, nbaTeam } = selection;
+    // Desired: "(NBA TEAM) - nba_opposition"
+    const { nbaOpposition, nbaTeam } = selection;
 
-    // 1) Get short day name from gameDate
-    let dayName = '';
-    if (gameDate) {
-      try {
-        let date = new Date(gameDate);
-        if (isNaN(date.getTime())) {
-          const parts = gameDate.split('/');
-          if (parts.length === 3) {
-            date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-          }
-        }
-        if (!isNaN(date.getTime())) {
-          dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
-        }
-      } catch {}
+    if (!nbaTeam) {
+      return 'No Game Selected';
     }
 
-    // 2) Parse opposition text, which may look like "Wed vs HOU", "vs HOU", "@ HOU", or just "HOU"
-    let indicator = 'vs';
-    let opponent = '';
-    const oppRaw = (nbaOpposition || '').trim();
-
-    // Remove day from opposition if it exists (e.g., "Wed vs HOU" -> "vs HOU")
-    const oppWithoutDay = oppRaw.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+/i, '');
-
-    // Check for vs or @ indicator
-    const match = oppWithoutDay.match(/(?:vs|@)\s*([A-Z]{2,3})/i);
-    if (match) {
-      indicator = oppWithoutDay.toLowerCase().includes('@') ? '@' : 'vs';
-      opponent = (match[1] || '').toUpperCase();
-    } else if (oppWithoutDay) {
-      // No indicator present; take the last token as team code
-      const tokens = oppWithoutDay.split(/\s+/);
-      opponent = (tokens[tokens.length - 1] || '').replace(/[^A-Za-z]/g, '').toUpperCase();
-    }
-
-    if (!opponent || !nbaTeam) {
-      return dayName || 'No Game Selected';
-    }
-
-    // Format: "Wed OKC vs HOU"
-    return `${dayName} ${nbaTeam} ${indicator} ${opponent}`;
+    // Format: "(OKC) - vs HOU" or "(OKC) - nba_opposition" as stored in sheet
+    return `(${nbaTeam}) - ${nbaOpposition || 'No Game Selected'}`;
   };
 
   const formatStatValue = (value: number | undefined, hasPlayed: boolean, isPercentage: boolean = false) => {
