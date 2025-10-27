@@ -310,10 +310,24 @@ export default function WeeklySelectionPage() {
   }, [currentTeam, viewTeamId, currentWeek]);
 
   useEffect(() => {
-    if (currentTeam) {
+    const loadTeams = async () => {
+      try {
+        const teamsRes = await fetch('/api/teams');
+        if (teamsRes.ok) {
+          const teamsData: Team[] = await teamsRes.json();
+          setTeams(teamsData);
+        }
+      } catch (error) {
+        console.error('Error loading teams:', error);
+      }
+    };
+
+    loadTeams();
+    
+    if (currentTeam || viewTeamId) {
       loadData();
     }
-  }, [currentTeam, loadData]);
+  }, [currentTeam, viewTeamId, loadData]);
 
   const loadDataForTeam = async (teamId: string) => {
     setDataLoading(true);
@@ -497,8 +511,28 @@ export default function WeeklySelectionPage() {
     );
   }
 
-  if (!currentTeam) {
-    return <LoginForm />;
+  // Show a message if no team is logged in, but allow viewing
+  if (!currentTeam && !viewTeamId) {
+    return (
+      <div className="min-h-screen bg-gray-800 flex flex-col items-center justify-center p-4">
+        <div className="bg-gray-700 p-8 rounded-lg max-w-md">
+          <h2 className="text-white text-xl mb-4">Please select a team</h2>
+          <p className="text-gray-300 mb-4">Select a team from the dropdown below to view their weekly selection.</p>
+          <select
+            className="bg-gray-600 text-white px-4 py-2 rounded w-full"
+            value={viewTeamId || ''}
+            onChange={(e) => setViewTeamId(e.target.value)}
+          >
+            <option value="">Select a team...</option>
+            {teams.map((team) => (
+              <option key={team.teamId} value={team.teamId}>
+                {team.teamName}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
   }
 
   const currentWeekData = weekDates.find(w => w.week === currentWeek);
