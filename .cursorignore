@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# General build artifacts
+build/
+dist/
+.tmp/
+.cache/
+
+# Env and secrets
+.env
+.env.*
+
+# Version control
+.git/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# Testing/coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Platform/host
+.vercel/
+.turbo/
+
+

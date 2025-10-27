@@ -1,0 +1,296 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Dynasty League Color Palette */
+  --primary: #ff9900;
+  --secondary: #cc4125;
+  --background: #ffffff;
+  --surface: #f8f9fa;
+  --text-primary: #000000;
+  --text-secondary: #6b7280;
+  --text-white: #ffffff;
+  --border: #000000;
+  --border-light: #e5e7eb;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #000000;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* Global Spacing Variables */
+  --global-padding: 16px;
+  --global-padding-sm: 12px;
+  --global-padding-lg: 24px;
+  --global-margin: 12px;
+  --global-margin-sm: 8px;
+  --global-margin-lg: 20px;
+  --global-gap: 16px;
+  --global-gap-sm: 12px;
+  --global-gap-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Oswald', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Custom Components */
+.btn-primary {
+  @apply bg-[var(--primary)] text-white font-bold py-2 px-4 rounded-none border-2 border-black shadow-lg hover:shadow-xl transition-all duration-200;
+}
+
+.btn-secondary {
+  @apply bg-[var(--secondary)] text-white font-bold py-2 px-4 rounded-none border-2 border-black shadow-lg hover:shadow-xl transition-all duration-200;
+}
+
+.btn-outline {
+  @apply bg-white text-black font-bold py-2 px-4 rounded-none border-2 border-black shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-gray-50;
+}
+
+.card {
+  @apply bg-white border-2 border-black shadow-lg rounded-none;
+}
+
+.card-header {
+  @apply bg-[var(--primary)] text-white font-bold p-4 border-b-2 border-black;
+}
+
+.table-header {
+  @apply bg-[var(--primary)] text-white font-bold;
+}
+
+.table-striped tbody tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+.table-hover tbody tr:hover {
+  @apply bg-gray-100;
+}
+
+/* Navigation Styles */
+.bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 bg-[var(--secondary)] border-t-2 border-black shadow-lg z-50;
+  height: 5rem; /* Explicit height to ensure consistent spacing */
+}
+
+.nav-item {
+  @apply flex flex-col items-center justify-center py-2 px-1 text-white transition-all duration-200;
+}
+
+.nav-item.active {
+  @apply bg-[var(--primary)] text-white;
+}
+
+.nav-item-icon {
+  @apply w-6 h-6 mb-1;
+}
+
+.nav-item-label {
+  @apply text-xs font-medium;
+}
+
+/* Typography */
+.heading-1 {
+  @apply text-3xl font-bold text-black;
+}
+
+.heading-2 {
+  @apply text-2xl font-bold text-black;
+}
+
+.heading-3 {
+  @apply text-xl font-bold text-black;
+}
+
+.body-text {
+  @apply text-base font-normal text-black;
+}
+
+.caption {
+  @apply text-sm font-normal text-gray-600;
+}
+
+/* Tables - Dynasty League Style */
+.table-wrap { 
+  overflow-x: auto; 
+  border: 2px solid var(--border); 
+  border-radius: 0; 
+  box-shadow: var(--shadow-lg);
+}
+
+table thead th { 
+  position: sticky; 
+  top: 0; 
+  background-color: var(--primary); 
+  color: white;
+  font-weight: bold;
+  z-index: 1; 
+  border-bottom: 2px solid var(--border);
+}
+
+table th, table td { 
+  border-bottom: 1px solid var(--border-light); 
+  border-right: 1px solid var(--border-light);
+}
+
+table th:last-child, table td:last-child {
+  border-right: none;
+}
+
+@media (max-width: 640px) {
+  table th, table td { 
+    padding-top: 0.5rem; 
+    padding-bottom: 0.5rem; 
+  }
+}
+
+/* Global Spacing Classes */
+.global-padding {
+  padding: var(--global-padding);
+}
+
+.global-padding-sm {
+  padding: var(--global-padding-sm);
+}
+
+.global-padding-lg {
+  padding: var(--global-padding-lg);
+}
+
+.global-margin {
+  margin: var(--global-margin);
+}
+
+.global-margin-sm {
+  margin: var(--global-margin-sm);
+}
+
+.global-margin-lg {
+  margin: var(--global-margin-lg);
+}
+
+.global-gap {
+  gap: var(--global-gap);
+}
+
+.global-gap-sm {
+  gap: var(--global-gap-sm);
+}
+
+.global-gap-lg {
+  gap: var(--global-gap-lg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  :root {
+    --global-padding: 12px;
+    --global-margin: 8px;
+    --global-gap: 12px;
+  }
+}
+
+/* Prevent horizontal overflow */
+* {
+  max-width: 100%;
+}
+
+/* Responsive containers */
+.container-responsive {
+  width: 100%;
+  max-width: 100vw;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive flex layouts */
+.flex-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .flex-responsive {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive text */
+@media (max-width: 640px) {
+  .heading-1 {
+    @apply text-2xl;
+  }
+  
+  .heading-2 {
+    @apply text-xl;
+  }
+  
+  .heading-3 {
+    @apply text-lg;
+  }
+}
+
+/* Prevent content from overflowing */
+.overflow-safe {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Responsive spacing */
+@media (max-width: 640px) {
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .py-6 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .space-x-8 > * + * {
+    margin-left: 1rem;
+  }
+  
+  .space-x-4 > * + * {
+    margin-left: 0.5rem;
+  }
+}
