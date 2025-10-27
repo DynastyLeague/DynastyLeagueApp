@@ -69,8 +69,6 @@ Your Google Sheet should have these tabs:
 - B: team_name  
 - C: team_email
 - D: Team_password
-- E: main_logo (URL)
-- F: word_logo (URL)
 
 #### Players Tab (Columns A-Z):
 - A: Player ID
