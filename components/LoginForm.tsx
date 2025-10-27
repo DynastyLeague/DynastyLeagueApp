@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 
@@ -10,7 +10,14 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, currentTeam, isLoading: authLoading } = useAuth();
+
+  // If already logged in, redirect to weekly-selection
+  useEffect(() => {
+    if (!authLoading && currentTeam) {
+      router.push('/weekly-selection');
+    }
+  }, [authLoading, currentTeam, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
