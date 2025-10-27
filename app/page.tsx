@@ -31,8 +31,14 @@ export default function Home() {
   useEffect(() => {
     if (!isLoading && !currentTeam) {
       router.replace('/login');
+      return;
     }
   }, [isLoading, currentTeam, router]);
+
+  // Don't render until auth is checked
+  if (isLoading || !currentTeam) {
+    return <div className="p-4 bg-white">Loading...</div>;
+  }
 
   return (
     <div className="p-4 bg-white">

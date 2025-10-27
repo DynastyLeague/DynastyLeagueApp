@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 
 export default function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +24,9 @@ export default function LoginForm() {
 
     if (!success) {
       setError('Invalid email or password. Please try again.');
+    } else {
+      // Redirect to home page after successful login
+      router.push('/home');
     }
   };
 
