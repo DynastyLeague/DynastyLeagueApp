@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySession } from '@/lib/server/auth';
 
-// No protected routes - app is fully accessible
+const PROTECTED_PREFIXES = ['/weekly-selection', '/roster', '/matchups', '/league'];
+
 export async function middleware(req: NextRequest) {
-  return NextResponse.next();
+  const { pathname } = req.nextUrl;
+  const protectedRoute = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  if (!protectedRoute) return NextResponse.next();
+
+  const access = req.cookies.get('dl_access')?.value;
+  const payload = await verifySession(access);
+  if (payload) return NextResponse.next();
+
+  // No valid access; redirect to login page
+  return NextResponse.redirect(new URL('/login', req.url));
 }
 
 export const config = {
-  matcher: [],
+  matcher: ['/weekly-selection/:path*', '/roster/:path*', '/matchups/:path*', '/league/:path*'],
 };
 
 

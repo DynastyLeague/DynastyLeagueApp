@@ -27,8 +27,15 @@ export default function Home() {
     load();
   }, []);
 
+  // If not logged in, redirect to login
+  useEffect(() => {
+    if (!isLoading && !currentTeam) {
+      router.replace('/login');
+    }
+  }, [isLoading, currentTeam, router]);
+
   // Don't render until auth is checked
-  if (isLoading) {
+  if (isLoading || !currentTeam) {
     return <div className="p-4 bg-white">Loading...</div>;
   }
 

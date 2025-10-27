@@ -32,14 +32,7 @@ function getPrivateKeyFromEnv(): string | undefined {
 export async function getSheetsClient() {
   const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
   const privateKey = getPrivateKeyFromEnv();
-  
-  console.log('Google Sheets Client - Env check:');
-  console.log('- GOOGLE_CLIENT_EMAIL:', clientEmail ? 'SET (' + clientEmail + ')' : 'NOT SET');
-  console.log('- GOOGLE_PRIVATE_KEY:', privateKey ? 'SET (length: ' + privateKey.length + ')' : 'NOT SET');
-  console.log('- GOOGLE_SHEETS_ID:', process.env.GOOGLE_SHEETS_ID ? 'SET (' + process.env.GOOGLE_SHEETS_ID + ')' : 'NOT SET');
-  
   if (!clientEmail || !privateKey) {
-    console.error('CRITICAL: Missing required environment variables!');
     throw new Error('Missing GOOGLE_CLIENT_EMAIL or GOOGLE_PRIVATE_KEY(_BASE64)');
   }
 
