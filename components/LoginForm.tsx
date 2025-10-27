@@ -32,8 +32,10 @@ export default function LoginForm() {
     if (!success) {
       setError('Invalid email or password. Please try again.');
     } else {
-      // Redirect to weekly-selection page after successful login
-      router.push('/weekly-selection');
+      // Wait a moment for state to update, then redirect
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // Force full page navigation to ensure clean state
+      window.location.href = '/weekly-selection';
     }
   };
 
