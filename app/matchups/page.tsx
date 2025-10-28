@@ -310,7 +310,7 @@ export default function MatchupPage() {
 
           {/* Section Header */}
           <div className="bg-orange-500 text-white p-6 sm:p-12 pb-8 sm:pb-16 mb-6 sm:mb-12">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-center">TODAY'S LIVE GAMES</h2>
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-center">TODAY&apos;S LIVE GAMES</h2>
           </div>
 
           {/* Games Content */}
