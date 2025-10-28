@@ -87,15 +87,15 @@ export default function DetailedMatchupPage() {
   };
 
   const formatGameDisplay = (selection: Selection) => {
-    // Desired: "(NBA TEAM) - nba_opposition"
+    // Desired: "NBA TEAM - nba_opposition"
     const { nbaOpposition, nbaTeam } = selection;
 
     if (!nbaTeam) {
       return 'No Game Selected';
     }
 
-    // Format: "(OKC) - vs HOU" or "(OKC) - nba_opposition" as stored in sheet
-    return `(${nbaTeam}) - ${nbaOpposition || 'No Game Selected'}`;
+    // Format: "OKC - vs HOU" or "OKC - nba_opposition" as stored in sheet
+    return `${nbaTeam} - ${nbaOpposition || 'No Game Selected'}`;
   };
 
   const formatStatValue = (value: number | undefined, hasPlayed: boolean, isPercentage: boolean = false) => {
