@@ -33,15 +33,29 @@ export default function MatchupPage() {
           setWeekDates(weekDatesData);
           setTeams(teamsData);
 
-          // Set first week as default (or you can implement logic to determine current week)
-          if (weekDatesData.length > 0) {
-            setSelectedWeek(weekDatesData[0].week);
-          }
-
-          // Get today's date
+          // Get today's date and determine current week
           if (currentTimeRes.ok) {
             const { date } = await currentTimeRes.json();
             setTodayDate(date);
+
+            // Find the week that contains today's date
+            const today = new Date(date);
+            let currentWeek = weekDatesData[0]?.week || 1; // Default to first week
+
+            for (const weekDate of weekDatesData) {
+              const startDate = new Date(weekDate.startDate);
+              const finishDate = new Date(weekDate.finishDate);
+              
+              if (today >= startDate && today <= finishDate) {
+                currentWeek = weekDate.week;
+                break;
+              }
+            }
+
+            setSelectedWeek(currentWeek);
+          } else if (weekDatesData.length > 0) {
+            // Fallback to first week if current time API fails
+            setSelectedWeek(weekDatesData[0].week);
           }
         }
       } catch (error) {
@@ -281,143 +295,187 @@ export default function MatchupPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Today's Games Section */}
-              {todayDate && (
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <div className="space-y-3 text-xs">
-                    {/* Team 1 Today's Games */}
-                    <div>
-                      {getTodayGames(matchup.matchupId, matchup.team1Id).length > 0 && (
-                        <>
-                          {/* Header Row */}
-                          <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
-                            <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team1Id)}</span>
-                            <div className="flex flex-1 text-[10px]">
-                              <span className="flex-1 text-center">PTS</span>
-                              <span className="flex-1 text-center">3PM</span>
-                              <span className="flex-1 text-center">AST</span>
-                              <span className="flex-1 text-center">STL</span>
-                              <span className="flex-1 text-center">BLK</span>
-                              <span className="flex-1 text-center">ORB</span>
-                              <span className="flex-1 text-center">DRB</span>
-                              <span className="flex-[1.5] text-center">FG%</span>
-                              <span className="flex-[1.5] text-center">FT%</span>
-                              <span className="flex-1 text-center">MIN</span>
-                            </div>
-                          </div>
-                          {/* Player Rows */}
-                          {getTodayGames(matchup.matchupId, matchup.team1Id).map((player, idx) => {
-                            const nameParts = player.playerName.split(' ');
-                            const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
-                            
-                            // Handle suffixes (Jr, Sr, III, IV, etc.)
-                            const suffixes = ['JR', 'SR', 'II', 'III', 'IV', 'V', 'JR.', 'SR.'];
-                            const lastPart = nameParts[nameParts.length - 1].toUpperCase();
-                            const isSuffix = suffixes.includes(lastPart.replace('.', ''));
-                            
-                            let surname;
-                            if (isSuffix && nameParts.length > 2) {
-                              // If last part is a suffix, get the second-to-last part plus suffix
-                              surname = `${nameParts[nameParts.length - 2].toUpperCase()} ${lastPart}`;
-                            } else {
-                              surname = lastPart;
-                            }
-                            
-                            const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
-                            const hasStarted = (player.min || 0) >= 1;
-                            
-                            return (
-                              <div key={idx} className="flex items-center py-1 text-gray-300">
-                                <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
-                                <div className="flex flex-1 text-[10px]">
-                                  <span className="flex-1 text-center">{formatStat(player.pts, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.threePm, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.ast, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.stl, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.blk, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.orb, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.drb, hasStarted)}</span>
-                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.fgPercent)}</span>
-                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.ftPercent)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.min, hasStarted)}</span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </>
-                      )}
-                    </div>
-
-                    {/* Team 2 Today's Games */}
-                    <div>
-                      {getTodayGames(matchup.matchupId, matchup.team2Id).length > 0 && (
-                        <>
-                          {/* Header Row */}
-                          <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
-                            <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team2Id)}</span>
-                            <div className="flex flex-1 text-[10px]">
-                              <span className="flex-1 text-center">PTS</span>
-                              <span className="flex-1 text-center">3PM</span>
-                              <span className="flex-1 text-center">AST</span>
-                              <span className="flex-1 text-center">STL</span>
-                              <span className="flex-1 text-center">BLK</span>
-                              <span className="flex-1 text-center">ORB</span>
-                              <span className="flex-1 text-center">DRB</span>
-                              <span className="flex-[1.5] text-center">FG%</span>
-                              <span className="flex-[1.5] text-center">FT%</span>
-                              <span className="flex-1 text-center">MIN</span>
-                            </div>
-                          </div>
-                          {/* Player Rows */}
-                          {getTodayGames(matchup.matchupId, matchup.team2Id).map((player, idx) => {
-                            const nameParts = player.playerName.split(' ');
-                            const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
-                            
-                            // Handle suffixes (Jr, Sr, III, IV, etc.)
-                            const suffixes = ['JR', 'SR', 'II', 'III', 'IV', 'V', 'JR.', 'SR.'];
-                            const lastPart = nameParts[nameParts.length - 1].toUpperCase();
-                            const isSuffix = suffixes.includes(lastPart.replace('.', ''));
-                            
-                            let surname;
-                            if (isSuffix && nameParts.length > 2) {
-                              // If last part is a suffix, get the second-to-last part plus suffix
-                              surname = `${nameParts[nameParts.length - 2].toUpperCase()} ${lastPart}`;
-                            } else {
-                              surname = lastPart;
-                            }
-                            
-                            const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
-                            const hasStarted = (player.min || 0) >= 1;
-                            
-                            return (
-                              <div key={idx} className="flex items-center py-1 text-gray-300">
-                                <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
-                                <div className="flex flex-1 text-[10px]">
-                                  <span className="flex-1 text-center">{formatStat(player.pts, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.threePm, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.ast, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.stl, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.blk, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.orb, hasStarted)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.drb, hasStarted)}</span>
-                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.fgPercent)}</span>
-                                  <span className="flex-[1.5] text-center">{formatPercentStat(player.ftPercent)}</span>
-                                  <span className="flex-1 text-center">{formatStat(player.min, hasStarted)}</span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </Link>
         ))}
       </div>
+
+      {/* Today's Live Games Section */}
+      {todayDate && filteredMatchups.some(m => 
+        getTodayGames(m.matchupId, m.team1Id).length > 0 || getTodayGames(m.matchupId, m.team2Id).length > 0
+      ) && (
+        <>
+          {/* Spacer */}
+          <div className="h-16 bg-gray-800"></div>
+
+          {/* Section Header */}
+          <div className="bg-orange-500 text-white p-6 sm:p-12 pb-8 sm:pb-16 mb-6 sm:mb-12">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-center">TODAY'S LIVE GAMES</h2>
+          </div>
+
+          {/* Games Content */}
+          <div className="px-4 sm:px-6 pb-12 container-responsive">
+            <div className="space-y-6 text-xs">
+              {filteredMatchups.map((matchup) => (
+                <div key={matchup.matchupId} className="bg-gray-800 py-6 px-4 sm:py-8 sm:px-8">
+                  {/* Matchup Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <Image
+                        src={`/logos/${getTeamById(matchup.team1Id)?.teamId}-main.png.png`}
+                        alt={getTeamById(matchup.team1Id)?.teamName || ''}
+                        width={40}
+                        height={40}
+                        className="object-contain w-10 h-10"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                      <span className="text-white font-bold">{getTeamById(matchup.team1Id)?.teamName || 'Team 1'}</span>
+                    </div>
+                    <span className="text-gray-400">vs</span>
+                    <div className="flex items-center space-x-3">
+                      <Image
+                        src={`/logos/${getTeamById(matchup.team2Id)?.teamId}-main.png.png`}
+                        alt={getTeamById(matchup.team2Id)?.teamName || ''}
+                        width={40}
+                        height={40}
+                        className="object-contain w-10 h-10"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                      <span className="text-white font-bold">{getTeamById(matchup.team2Id)?.teamName || 'Team 2'}</span>
+                    </div>
+                  </div>
+
+                  {/* Team 1 Today's Games */}
+                  <div className="mb-6">
+                    {getTodayGames(matchup.matchupId, matchup.team1Id).length > 0 && (
+                      <>
+                        {/* Header Row */}
+                        <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
+                          <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team1Id)}</span>
+                          <div className="flex flex-1 text-[10px]">
+                            <span className="flex-1 text-center">PTS</span>
+                            <span className="flex-1 text-center">3PM</span>
+                            <span className="flex-1 text-center">AST</span>
+                            <span className="flex-1 text-center">STL</span>
+                            <span className="flex-1 text-center">BLK</span>
+                            <span className="flex-1 text-center">ORB</span>
+                            <span className="flex-1 text-center">DRB</span>
+                            <span className="flex-[1.5] text-center">FG%</span>
+                            <span className="flex-[1.5] text-center">FT%</span>
+                            <span className="flex-1 text-center">MIN</span>
+                          </div>
+                        </div>
+                        {/* Player Rows */}
+                        {getTodayGames(matchup.matchupId, matchup.team1Id).map((player, idx) => {
+                          const nameParts = player.playerName.split(' ');
+                          const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
+                          
+                          const suffixes = ['JR', 'SR', 'II', 'III', 'IV', 'V', 'JR.', 'SR.'];
+                          const lastPart = nameParts[nameParts.length - 1].toUpperCase();
+                          const isSuffix = suffixes.includes(lastPart.replace('.', ''));
+                          
+                          let surname;
+                          if (isSuffix && nameParts.length > 2) {
+                            surname = `${nameParts[nameParts.length - 2].toUpperCase()} ${lastPart}`;
+                          } else {
+                            surname = lastPart;
+                          }
+                          
+                          const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
+                          const hasStarted = (player.min || 0) >= 1;
+                          
+                          return (
+                            <div key={idx} className="flex items-center py-1 text-gray-300">
+                              <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
+                              <div className="flex flex-1 text-[10px]">
+                                <span className="flex-1 text-center">{formatStat(player.pts, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.threePm, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.ast, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.stl, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.blk, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.orb, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.drb, hasStarted)}</span>
+                                <span className="flex-[1.5] text-center">{formatPercentStat(player.fgPercent)}</span>
+                                <span className="flex-[1.5] text-center">{formatPercentStat(player.ftPercent)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.min, hasStarted)}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Team 2 Today's Games */}
+                  <div>
+                    {getTodayGames(matchup.matchupId, matchup.team2Id).length > 0 && (
+                      <>
+                        {/* Header Row */}
+                        <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
+                          <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team2Id)}</span>
+                          <div className="flex flex-1 text-[10px]">
+                            <span className="flex-1 text-center">PTS</span>
+                            <span className="flex-1 text-center">3PM</span>
+                            <span className="flex-1 text-center">AST</span>
+                            <span className="flex-1 text-center">STL</span>
+                            <span className="flex-1 text-center">BLK</span>
+                            <span className="flex-1 text-center">ORB</span>
+                            <span className="flex-1 text-center">DRB</span>
+                            <span className="flex-[1.5] text-center">FG%</span>
+                            <span className="flex-[1.5] text-center">FT%</span>
+                            <span className="flex-1 text-center">MIN</span>
+                          </div>
+                        </div>
+                        {/* Player Rows */}
+                        {getTodayGames(matchup.matchupId, matchup.team2Id).map((player, idx) => {
+                          const nameParts = player.playerName.split(' ');
+                          const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
+                          
+                          const suffixes = ['JR', 'SR', 'II', 'III', 'IV', 'V', 'JR.', 'SR.'];
+                          const lastPart = nameParts[nameParts.length - 1].toUpperCase();
+                          const isSuffix = suffixes.includes(lastPart.replace('.', ''));
+                          
+                          let surname;
+                          if (isSuffix && nameParts.length > 2) {
+                            surname = `${nameParts[nameParts.length - 2].toUpperCase()} ${lastPart}`;
+                          } else {
+                            surname = lastPart;
+                          }
+                          
+                          const displayName = firstInitial ? `${firstInitial}. ${surname}` : surname;
+                          const hasStarted = (player.min || 0) >= 1;
+                          
+                          return (
+                            <div key={idx} className="flex items-center py-1 text-gray-300">
+                              <span className="w-28 flex-shrink-0 font-medium truncate">{displayName}</span>
+                              <div className="flex flex-1 text-[10px]">
+                                <span className="flex-1 text-center">{formatStat(player.pts, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.threePm, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.ast, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.stl, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.blk, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.orb, hasStarted)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.drb, hasStarted)}</span>
+                                <span className="flex-[1.5] text-center">{formatPercentStat(player.fgPercent)}</span>
+                                <span className="flex-[1.5] text-center">{formatPercentStat(player.ftPercent)}</span>
+                                <span className="flex-1 text-center">{formatStat(player.min, hasStarted)}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Bottom padding for navigation */}
       <div className="h-40"></div>
