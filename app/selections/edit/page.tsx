@@ -181,7 +181,7 @@ export default function EditSelectionsPage() {
   };
 
   // Get available games for a player
-  const getGamesForPlayer = (player: Player | null): Game[] => {
+  const getGamesForPlayer = (player: Player | null | undefined): Game[] => {
     if (!player) return [];
     return games.filter(g => g.nbaTeam === player.nbaTeam);
   };
