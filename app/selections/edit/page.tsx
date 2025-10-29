@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Selection, Team, Matchup, Player, Game, WeekDate } from '@/lib/types';
 
 export default function EditSelectionsPage() {
-  const { currentTeam, role, isLoading: authLoading } = useAuth();
+  const { role, isLoading: authLoading } = useAuth();
   const router = useRouter();
   
   const [weekDates, setWeekDates] = useState<WeekDate[]>([]);
@@ -72,11 +72,22 @@ export default function EditSelectionsPage() {
 
   // Fetch selections when filters change
   useEffect(() => {
-    if (selectedWeek && selectedTeamId && selectedMatchupId) {
-      fetchSelections();
-    } else {
-      setSelections([]);
-    }
+    const loadSelections = async () => {
+      if (selectedWeek && selectedTeamId && selectedMatchupId) {
+        try {
+          const res = await fetch(`/api/selections?week=${selectedWeek}&teamId=${encodeURIComponent(selectedTeamId)}&matchupId=${encodeURIComponent(selectedMatchupId)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setSelections(data);
+          }
+        } catch (error) {
+          console.error('Error fetching selections:', error);
+        }
+      } else {
+        setSelections([]);
+      }
+    };
+    loadSelections();
   }, [selectedWeek, selectedTeamId, selectedMatchupId]);
 
   // Fetch games when week changes
@@ -99,20 +110,6 @@ export default function EditSelectionsPage() {
     }
   }, [selectedTeamId]);
 
-  const fetchSelections = async () => {
-    if (!selectedWeek || !selectedTeamId || !selectedMatchupId) return;
-
-    try {
-      const res = await fetch(`/api/selections?week=${selectedWeek}&teamId=${encodeURIComponent(selectedTeamId)}&matchupId=${encodeURIComponent(selectedMatchupId)}`);
-      if (res.ok) {
-        const data = await res.json();
-        console.log('Fetched selections:', data.length, 'positions:', data.map((s: Selection) => s.position));
-        setSelections(data);
-      }
-    } catch (error) {
-      console.error('Error fetching selections:', error);
-    }
-  };
 
   // Get filtered matchups for selected week and team
   const getFilteredMatchups = () => {
@@ -218,7 +215,14 @@ export default function EditSelectionsPage() {
       // Format selectedGame similar to weekly-selection page
       const formattedGame = formatGameDisplay(selectedGame);
 
-      const changes: any = {
+      const changes: {
+        playerId?: string;
+        playerName?: string;
+        nbaTeam?: string;
+        gameDate?: string;
+        selectedGame?: string;
+        nbaOpposition?: string;
+      } = {
         playerId: editingPlayerId,
         playerName: selectedPlayer.name,
         nbaTeam: selectedPlayer.nbaTeam,
@@ -245,7 +249,17 @@ export default function EditSelectionsPage() {
         setMessage({ type: 'success', text: 'Selection updated successfully!' });
         setEditingSelection(null);
         // Refresh selections
-        await fetchSelections();
+        if (selectedWeek && selectedTeamId && selectedMatchupId) {
+          try {
+            const refreshRes = await fetch(`/api/selections?week=${selectedWeek}&teamId=${encodeURIComponent(selectedTeamId)}&matchupId=${encodeURIComponent(selectedMatchupId)}`);
+            if (refreshRes.ok) {
+              const data = await refreshRes.json();
+              setSelections(data);
+            }
+          } catch (error) {
+            console.error('Error refreshing selections:', error);
+          }
+        }
         setTimeout(() => setMessage(null), 3000);
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to update selection' });

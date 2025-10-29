@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Team } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { Standing } from "@/app/api/standings/route";
 
 export default function Home() {
   const router = useRouter();
-  const [teams, setTeams] = useState<Team[]>([]);
   const [standings, setStandings] = useState<Standing[]>([]);
   const [loading, setLoading] = useState(true);
   const { currentTeam, isLoading } = useAuth();
@@ -17,15 +15,7 @@ export default function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [teamsRes, standingsRes] = await Promise.all([
-          fetch("/api/teams"),
-          fetch("/api/standings"),
-        ]);
-        
-        if (teamsRes.ok) {
-          const teamsData: Team[] = await teamsRes.json();
-          setTeams(teamsData);
-        }
+        const standingsRes = await fetch("/api/standings");
         
         if (standingsRes.ok) {
           const standingsData: Standing[] = await standingsRes.json();
@@ -57,16 +47,6 @@ export default function Home() {
   const easternStandings = standings
     .filter(s => s.conference?.toLowerCase() === 'eastern')
     .sort((a, b) => a.position - b.position);
-
-  // Function to add ordinal suffix to numbers
-  const getOrdinalSuffix = (num: number): string => {
-    const j = num % 10;
-    const k = num % 100;
-    if (j === 1 && k !== 11) return num + 'st';
-    if (j === 2 && k !== 12) return num + 'nd';
-    if (j === 3 && k !== 13) return num + 'rd';
-    return num + 'th';
-  };
 
   return (
     <div className="min-h-screen bg-gray-800">
