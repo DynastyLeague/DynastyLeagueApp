@@ -38,7 +38,7 @@ export default function WeeklySelectionPage() {
   const [submittedSelections, setSubmittedSelections] = useState<unknown[]>([]);
   const [viewTeamId, setViewTeamId] = useState<string | null>(null);
 
-  // Determine current week based on current date from Google Sheets
+  // Determine current week based on current date + 7 days from Google Sheets
   const getCurrentWeek = async (weekDates: WeekDate[]): Promise<number> => {
     try {
       // Fetch current date/time from TodaysDate tab
@@ -49,7 +49,6 @@ export default function WeeklySelectionPage() {
       }
       
       const { date: todaysDate } = await currentTimeRes.json();
-      console.log('TodaysDate from sheet:', todaysDate);
       
       // Parse the current date - handle DD/MM/YYYY format
       let currentDate: Date;
@@ -68,15 +67,16 @@ export default function WeeklySelectionPage() {
         currentDate = new Date(todaysDate);
       }
       
-      console.log('Parsed current date:', currentDate);
+      // Add 7 days to current date
+      const nextWeekDate = new Date(currentDate);
+      nextWeekDate.setDate(nextWeekDate.getDate() + 7);
       
       // Sort weeks by week number to ensure proper order
       const sortedWeeks = [...weekDates].sort((a, b) => a.week - b.week);
       
-      for (let i = 0; i < sortedWeeks.length; i++) {
-        const week = sortedWeeks[i];
-        
-        // Parse start date in the same way
+      // Find the week that contains (current date + 7 days)
+      for (const week of sortedWeeks) {
+        // Parse start and finish dates with better date handling
         let startDate: Date;
         if (week.startDate.includes('/')) {
           const parts = week.startDate.split('/');
@@ -91,26 +91,55 @@ export default function WeeklySelectionPage() {
         } else {
           startDate = new Date(week.startDate);
         }
-        
-        console.log(`Week ${week.week} start date:`, startDate, 'Current >= Start:', currentDate >= startDate);
-        
-        // If current date is >= this week's start date, we're in or past this week
-        // So we should show the NEXT week for selections
-        if (currentDate >= startDate) {
-          const nextWeekIndex = i + 1;
-          if (nextWeekIndex < sortedWeeks.length) {
-            console.log(`Current date is in/past week ${week.week}, returning next week ${sortedWeeks[nextWeekIndex].week}`);
-            return sortedWeeks[nextWeekIndex].week;
+
+        let finishDate: Date;
+        if (week.finishDate.includes('/')) {
+          const parts = week.finishDate.split('/');
+          if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const year = parseInt(parts[2]);
+            finishDate = new Date(year, month, day);
+            // Set to end of day
+            finishDate.setHours(23, 59, 59, 999);
           } else {
-            // We're in the last week, so return the last week
-            console.log(`In last week ${week.week}, returning it`);
-            return week.week;
+            finishDate = new Date(week.finishDate);
           }
+        } else {
+          finishDate = new Date(week.finishDate);
+        }
+        
+        // Check if (current date + 7 days) falls within this week
+        if (nextWeekDate >= startDate && nextWeekDate <= finishDate) {
+          return week.week;
+        }
+      }
+      
+      // If (current date + 7 days) is past all weeks, return the last week
+      if (sortedWeeks.length > 0) {
+        const lastWeek = sortedWeeks[sortedWeeks.length - 1];
+        let lastWeekFinishDate: Date;
+        if (lastWeek.finishDate.includes('/')) {
+          const parts = lastWeek.finishDate.split('/');
+          if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const year = parseInt(parts[2]);
+            lastWeekFinishDate = new Date(year, month, day);
+            lastWeekFinishDate.setHours(23, 59, 59, 999);
+          } else {
+            lastWeekFinishDate = new Date(lastWeek.finishDate);
+          }
+        } else {
+          lastWeekFinishDate = new Date(lastWeek.finishDate);
+        }
+        
+        if (nextWeekDate > lastWeekFinishDate) {
+          return lastWeek.week;
         }
       }
       
       // If we haven't started any weeks yet, return the first week
-      console.log('Before all weeks, returning first week:', sortedWeeks[0]?.week || 1);
       return sortedWeeks[0]?.week || 1;
     } catch (error) {
       console.error('Error calculating current week:', error);

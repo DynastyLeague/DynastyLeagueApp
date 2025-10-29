@@ -43,7 +43,7 @@ const ChevronUpIcon = () => (
 export default function BottomNav({ }: BottomNavProps) {
   const pathname = usePathname();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const { currentTeam, logout } = useAuth();
+  const { currentTeam, logout, role } = useAuth();
 
   const navItems = [
     {
@@ -87,6 +87,15 @@ export default function BottomNav({ }: BottomNavProps) {
       {showProfileMenu && currentTeam && (
         <div className="fixed bottom-24 right-4 bg-gray-800 text-white shadow-xl p-2 min-w-[140px] z-40">
           <div className="px-2 py-1 text-xs text-gray-300">{currentTeam.teamName}</div>
+          {role === 'commissioner' && (
+            <Link
+              href="/selections/edit"
+              onClick={() => setShowProfileMenu(false)}
+              className="block w-full text-left px-2 py-1 hover:bg-gray-700"
+            >
+              Edit Selections
+            </Link>
+          )}
           <button 
             onClick={async () => { 
               setShowProfileMenu(false); 

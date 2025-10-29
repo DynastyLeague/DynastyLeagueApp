@@ -38,13 +38,61 @@ export default function MatchupPage() {
             const { date } = await currentTimeRes.json();
             setTodayDate(date);
 
-            // Find the week that contains today's date
-            const today = new Date(date);
-            let currentWeek = weekDatesData[0]?.week || 1; // Default to first week
+            // Parse today's date with better date handling
+            let today: Date;
+            if (date.includes('/')) {
+              const parts = date.split('/');
+              if (parts.length === 3) {
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const year = parseInt(parts[2]);
+                today = new Date(year, month, day);
+              } else {
+                today = new Date(date);
+              }
+            } else {
+              today = new Date(date);
+            }
 
-            for (const weekDate of weekDatesData) {
-              const startDate = new Date(weekDate.startDate);
-              const finishDate = new Date(weekDate.finishDate);
+            // Sort weeks by week number to ensure proper order
+            const sortedWeeks = [...weekDatesData].sort((a, b) => a.week - b.week);
+            
+            let currentWeek = sortedWeeks[0]?.week || 1; // Default to first week
+
+            // Find the week that contains today's date
+            for (const weekDate of sortedWeeks) {
+              // Parse start and finish dates with better date handling
+              let startDate: Date;
+              if (weekDate.startDate.includes('/')) {
+                const parts = weekDate.startDate.split('/');
+                if (parts.length === 3) {
+                  const day = parseInt(parts[0]);
+                  const month = parseInt(parts[1]) - 1;
+                  const year = parseInt(parts[2]);
+                  startDate = new Date(year, month, day);
+                } else {
+                  startDate = new Date(weekDate.startDate);
+                }
+              } else {
+                startDate = new Date(weekDate.startDate);
+              }
+
+              let finishDate: Date;
+              if (weekDate.finishDate.includes('/')) {
+                const parts = weekDate.finishDate.split('/');
+                if (parts.length === 3) {
+                  const day = parseInt(parts[0]);
+                  const month = parseInt(parts[1]) - 1;
+                  const year = parseInt(parts[2]);
+                  finishDate = new Date(year, month, day);
+                  // Set to end of day
+                  finishDate.setHours(23, 59, 59, 999);
+                } else {
+                  finishDate = new Date(weekDate.finishDate);
+                }
+              } else {
+                finishDate = new Date(weekDate.finishDate);
+              }
               
               if (today >= startDate && today <= finishDate) {
                 currentWeek = weekDate.week;
@@ -52,10 +100,35 @@ export default function MatchupPage() {
               }
             }
 
+            // If today is past all weeks, show the last week
+            if (sortedWeeks.length > 0) {
+              const lastWeek = sortedWeeks[sortedWeeks.length - 1];
+              let lastWeekFinishDate: Date;
+              if (lastWeek.finishDate.includes('/')) {
+                const parts = lastWeek.finishDate.split('/');
+                if (parts.length === 3) {
+                  const day = parseInt(parts[0]);
+                  const month = parseInt(parts[1]) - 1;
+                  const year = parseInt(parts[2]);
+                  lastWeekFinishDate = new Date(year, month, day);
+                  lastWeekFinishDate.setHours(23, 59, 59, 999);
+                } else {
+                  lastWeekFinishDate = new Date(lastWeek.finishDate);
+                }
+              } else {
+                lastWeekFinishDate = new Date(lastWeek.finishDate);
+              }
+              
+              if (today > lastWeekFinishDate) {
+                currentWeek = lastWeek.week;
+              }
+            }
+
             setSelectedWeek(currentWeek);
           } else if (weekDatesData.length > 0) {
             // Fallback to first week if current time API fails
-            setSelectedWeek(weekDatesData[0].week);
+            const sortedWeeks = [...weekDatesData].sort((a, b) => a.week - b.week);
+            setSelectedWeek(sortedWeeks[0].week);
           }
         }
       } catch (error) {
@@ -316,43 +389,18 @@ export default function MatchupPage() {
           {/* Games Content */}
           <div className="px-4 sm:px-6 pb-12 container-responsive">
             <div className="space-y-6 text-xs">
-              {filteredMatchups.map((matchup) => (
-                <div key={matchup.matchupId} className="bg-gray-800 py-6 px-4 sm:py-8 sm:px-8">
-                  {/* Matchup Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <Image
-                        src={`/logos/${getTeamById(matchup.team1Id)?.teamId}-main.png.png`}
-                        alt={getTeamById(matchup.team1Id)?.teamName || ''}
-                        width={40}
-                        height={40}
-                        className="object-contain w-10 h-10"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                      <span className="text-white font-bold">{getTeamById(matchup.team1Id)?.teamName || 'Team 1'}</span>
-                    </div>
-                    <span className="text-gray-400">vs</span>
-                    <div className="flex items-center space-x-3">
-                      <Image
-                        src={`/logos/${getTeamById(matchup.team2Id)?.teamId}-main.png.png`}
-                        alt={getTeamById(matchup.team2Id)?.teamName || ''}
-                        width={40}
-                        height={40}
-                        className="object-contain w-10 h-10"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                      <span className="text-white font-bold">{getTeamById(matchup.team2Id)?.teamName || 'Team 2'}</span>
-                    </div>
-                  </div>
-
-                  {/* Team 1 Today's Games */}
-                  <div className="mb-6">
-                    {getTodayGames(matchup.matchupId, matchup.team1Id).length > 0 && (
-                      <>
+              {filteredMatchups.map((matchup) => {
+                const team1Games = getTodayGames(matchup.matchupId, matchup.team1Id);
+                const team2Games = getTodayGames(matchup.matchupId, matchup.team2Id);
+                const hasAnyGames = team1Games.length > 0 || team2Games.length > 0;
+                
+                if (!hasAnyGames) return null;
+                
+                return (
+                  <div key={matchup.matchupId} className="bg-gray-800 py-6 px-4 sm:py-8 sm:px-8">
+                    {/* Team 1 Today's Games */}
+                    {team1Games.length > 0 && (
+                      <div className={team2Games.length > 0 ? "mb-6" : ""}>
                         {/* Header Row */}
                         <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
                           <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team1Id)}</span>
@@ -370,7 +418,7 @@ export default function MatchupPage() {
                           </div>
                         </div>
                         {/* Player Rows */}
-                        {getTodayGames(matchup.matchupId, matchup.team1Id).map((player, idx) => {
+                        {team1Games.map((player, idx) => {
                           const nameParts = player.playerName.split(' ');
                           const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
                           
@@ -406,14 +454,12 @@ export default function MatchupPage() {
                             </div>
                           );
                         })}
-                      </>
+                      </div>
                     )}
-                  </div>
 
-                  {/* Team 2 Today's Games */}
-                  <div>
-                    {getTodayGames(matchup.matchupId, matchup.team2Id).length > 0 && (
-                      <>
+                    {/* Team 2 Today's Games */}
+                    {team2Games.length > 0 && (
+                      <div>
                         {/* Header Row */}
                         <div className="flex items-center py-1 text-gray-500 font-bold border-b border-gray-700 mb-1">
                           <span className="w-28 flex-shrink-0">{getShortTeamName(matchup.team2Id)}</span>
@@ -431,7 +477,7 @@ export default function MatchupPage() {
                           </div>
                         </div>
                         {/* Player Rows */}
-                        {getTodayGames(matchup.matchupId, matchup.team2Id).map((player, idx) => {
+                        {team2Games.map((player, idx) => {
                           const nameParts = player.playerName.split(' ');
                           const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : '';
                           
@@ -467,11 +513,11 @@ export default function MatchupPage() {
                             </div>
                           );
                         })}
-                      </>
+                      </div>
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </>
